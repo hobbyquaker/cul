@@ -1,5 +1,5 @@
 {
-  "version": "0.0.1",
+  "version": "0.0.2",
   "name": "cul",
   "description": "module to interact with busware cul / culfw",
   "homepage": "http://github.com/hobbyquaker/cul",

@@ -64,17 +64,20 @@ var cul = new Cul(options);
 The optional 2nd param ```obj``` of the data event contains a object representation of the parsed data, examples:
 
 ```
-E020563037A01000200, { type: '02',
-  address: '0205',
-  device: 'EM1000-EM',
-  states: { seq: 99, total: 31235, current: 1, peak: 2 },
-  protocol: 'EM'}
+E020563037A01000200, {
+    protocol: 'EM',
+    address: '0205',
+    device: 'EM1000-EM',
+    type: '02',
+    data: { seq: 99, total: 31235, current: 1, peak: 2 }
+}
 
-K11455258, { protocol: 'KS',
+K11455258, {
+    protocol: 'KS',
     address: 1,
     device: 'S300TH',
-    states: { temperature: 24.5, humidity: 58.5 },
-    raw: '' }
+    data: { temperature: 24.5, humidity: 58.5 },
+}
 ```
 
 Until now only for a few devices that I own myself data parsing is implemented.
