@@ -1,7 +1,7 @@
 {
-  "version": "0.1.0",
+  "version": "0.1.1",
   "name": "cul",
-  "description": "module to interact with busware cul / culfw",
+  "description": "Module to interact with Busware CUL / culfw",
   "homepage": "http://github.com/hobbyquaker/cul",
   "author": "hobbyquaker <hq@ccu.io>",
   "keywords": [
@@ -11,8 +11,6 @@
     "FS20",
     "HomeMatic",
     "Max",
-    "COC",
-    "CUNO",
     "Busware",
     "culfw",
     "fhem"
@@ -30,7 +28,12 @@
     "url": "https://github.com/hobbyquaker/cul/issues"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "grunt test"
   },
-  "license": "GPLv2"
+  "license": "GPLv2",
+  "devDependencies": {
+    "grunt": "~0.4.5",
+    "grunt-simple-mocha": "~0.4.0",
+    "mocha": "~1.21.4"
+  }
 }

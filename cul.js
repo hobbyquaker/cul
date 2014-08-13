@@ -2,73 +2,85 @@
  *      CUL/COC / culfw Node.js module
  *      https://github.com/hobbyquaker/cul
  *
+ *      Licensed under GPL v2
  *      Copyright (c) 2014 hobbyquaker <hq@ccu.io>
  *
  */
 
-var util =                  require('util');
-var EventEmitter =          require('events').EventEmitter;
+var util =                      require('util');
+var EventEmitter =              require('events').EventEmitter;
 
-var SerialPortModule =      require("serialport");
-var SerialPort =            SerialPortModule.SerialPort;
+var SerialPortModule =          require("serialport");
+var SerialPort =                SerialPortModule.SerialPort;
 
 var protocol = {
-    em:                     require('./lib/em.js'),
-    esa:                    require('./lib/esa.js'),
-    fht:                    require('./lib/fht.js'),
-    fs20:                   require('./lib/fs20.js'),
-    hms:                    require('./lib/hms.js'),
-    moritz:                 require('./lib/moritz.js'),
-    tx:                     require('./lib/tx.js'),
-    uniroll:                require('./lib/uniroll.js'),
-    ws:                     require('./lib/ws.js')
+    em:                         require('./lib/em.js'),
+    //esa:                      require('./lib/esa.js'),
+    //fht:                      require('./lib/fht.js'),
+    fs20:                       require('./lib/fs20.js'),
+    hms:                        require('./lib/hms.js'),
+    //moritz:                   require('./lib/moritz.js'),
+    //tx:                       require('./lib/tx.js'),
+    //uniroll:                  require('./lib/uniroll.js'),
+    ws:                         require('./lib/ws.js')
 };
 
 // http://culfw.de/commandref.html
 var commands = {
-    'F': 'FS20',
-    'T': 'FHT',
-    'E': 'EM',
-    'W': 'WS',
-    'H': 'HMS',
-    'S': 'ESA',
-    'R': 'Hoermann',
-    'A': 'AskSin',
-    'Z': 'MORITZ',
-    'o': 'Obis',
-    't': 'TX',
-    'U': 'Uniroll',
-    'K': 'WS'
+    'F':                        'FS20',
+    'T':                        'FHT',
+    'E':                        'EM',
+    'W':                        'WS',
+    'H':                        'HMS',
+    'S':                        'ESA',
+    'R':                        'Hoermann',
+    'A':                        'AskSin',
+    'Z':                        'MORITZ',
+    'o':                        'Obis',
+    't':                        'TX',
+    'U':                        'Uniroll',
+    'K':                        'WS'
+};
+
+var modes = {
+    'slowrf':                   {},
+    'moritz':                   {start: 'Zr',       stop: 'Zx'},
+    'asksin':                   {start: 'Ar',       stop: 'Ax'}
 };
 
 
 var Cul = function (options) {
     var that = this;
 
-    options.baudrate =      options.baudrate ||     9600;
-    options.serialport =    options.serialport ||   '/dev/ttyACM0';
-    options.mode =          options.mode ||         'SlowRF';
-    options.init =          options.init ||         true;
-    options.parse =         options.parse ||        true;
-    options.coc =           options.coc ||          false;
+    options.initCmd =                                       0x01;
+    options.mode =              options.mode        ||      'SlowRF';
+    options.init =              options.init        ||      true;
+    options.parse =             options.parse       ||      true;
+    options.coc =               options.coc         ||      false;
+    options.rssi =              options.rssi        ||      true;
 
-    var modes = {
-        'slowrf':           {start: 'X01'},
-        'moritz':           {start: 'X01\r\nZr',    stop: 'Zx'},
-        'asksin':           {start: 'X01\r\nAr',    stop: 'Ax'}
-    };
+    if (options.coc) {
+        options.baudrate =      options.baudrate    ||      38400;
+        options.serialport =    options.serialport  ||      '/dev/ttyACM0';
+    } else {
+        options.baudrate =      options.baudrate    ||      9600;
+        options.serialport =    options.serialport  ||      '/dev/ttyAMA0';
+    }
 
-    var initCmd = modes[options.mode.toLowerCase()].start;
+    if (options.rssi) {
+        // Set flag, binary or
+        options.initCmd = options.initCmd | 0x20;
+    }
+
+    var modeCmd = modes[options.mode.toLowerCase()] ? modes[options.mode.toLowerCase()].start : undefined;
     var stopCmd;
 
     if (modes[options.mode.toLowerCase()] && modes[options.mode.toLowerCase()].stop) {
-        stopCmd = modes[mode.toLowerCase()].stop;
+        stopCmd = modes[options.mode.toLowerCase()].stop;
     }
-    var spOptions = {
-        baudrate: options.baudrate
-    };
-    if (options.coc) spOptions.parser = SerialPortModule.parsers.readline('\r\n');
 
+    var spOptions = {baudrate: options.baudrate};
+    if (options.coc) spOptions.parser = SerialPortModule.parsers.readline('\r\n');
     var serialPort = new SerialPort(options.serialport, spOptions);
 
     this.close = function (callback) {
@@ -88,9 +100,16 @@ var Cul = function (options) {
     serialPort.on("open", function () {
 
         if (options.init) {
-            that.write(initCmd, function (err, res) {
+            that.write(options.initCmd, function (err, res) {
                 if (err) throw err;
-                ready();
+                if (modeCmd) {
+                    that.write(modeCmd, function (err, res) {
+                        if (err) throw err;
+                        ready();
+                    });
+                } else {
+                    ready();
+                }
             });
         } else {
             ready();
@@ -116,10 +135,12 @@ var Cul = function (options) {
 
     this.cmd = function cmd() {
         var args = Array.prototype.slice.call(arguments);
+
         if (typeof args[args.length-1] === 'function') {
             var callback = args.pop();
         }
-        var c = args[0];
+
+        var c = args[0].toLowerCase();
         args = args.slice(1);
 
         if (commands[c.toUpperCase()]) c = commands[c.toUpperCase()].toLowerCase();
@@ -141,6 +162,7 @@ var Cul = function (options) {
     };
 
     function parse(data) {
+
         var message;
         var command;
         var p;
@@ -157,8 +179,8 @@ var Cul = function (options) {
             }
 
         }
-
         that.emit('data', data, message);
+
     }
 
     return this;
