@@ -1,22 +1,28 @@
 {
-  "version": "0.0.2",
+  "version": "0.1.0",
   "name": "cul",
   "description": "module to interact with busware cul / culfw",
   "homepage": "http://github.com/hobbyquaker/cul",
   "author": "hobbyquaker <hq@ccu.io>",
   "keywords": [
-    "smarthome",
-    "cul",
+    "Smarthome",
+    "Home Automation",
+    "CUL",
     "FS20",
     "HomeMatic",
-    "Max"
+    "Max",
+    "COC",
+    "CUNO",
+    "Busware",
+    "culfw",
+    "fhem"
   ],
   "contributors": [],
   "repository": {
     "type": "git",
     "url": "git://github.com/hobbyquaker/cul.git"
   },
-  "main": "./lib/cul.js",
+  "main": "./cul.js",
   "dependencies": {
     "serialport": "~1.4.5"
   },
