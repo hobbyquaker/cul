@@ -13,7 +13,7 @@ many RF devices can be controlled, like [FS20](http://www.elv.de/fs20-funkschalt
 This module provides a thin abstraction for the serial port communication with CUL/COC and lightweight parse and command
 wrappers. It's intended to be used in different Node.js based Home Automation software.
 
-This module is also used by an "adapter" of the Home Automation project "[ioBroker](https://github.com/iobroker/ioBroker.nodejs)".
+This module is also used by the Home Automation project "[ioBroker](https://github.com/iobroker/ioBroker.nodejs)".
 
 #### Credits
 
@@ -218,7 +218,7 @@ Pull requests welcome!
 * more tests ...
 * [CUNO](http://busware.de/tiki-index.php?page=CUNO) support
 
-Pull requests welcome! :)
+Pull requests welcome! :smile:
 
 ## Credits
 
