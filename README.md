@@ -190,12 +190,12 @@ K11455258, {
 Until now only for a few selected devices data parsing is implemented.
 
 | protocol 	|         device        	| should work 	| tested 	|
-|:--------:	|:---------------------:	|:-----------:	|:------:	|
-| FS20     	| all Devices              	|                    | :white_check_mark:   |
-| HMS      	| HMS100T               	|                    | :white_check_mark:   |
+|:---------	|:----------------------	|:-----------:	|:------:	|
+| FS20     	| all Devices              	| :white_check_mark: | :white_check_mark:   |
+| HMS      	| HMS100T               	| :white_check_mark: | :white_check_mark:   |
 | HMS      	| HMS100TF              	| :white_check_mark: |        	            |
-| EM       	| EM1000(-EM, -GZ, -WZ) 	|                    | :white_check_mark:   |
-| WS       	| S300TH                	|                    | :white_check_mark:   |
+| EM       	| EM1000(-EM, -GZ, -WZ) 	| :white_check_mark: | :white_check_mark:   |
+| WS       	| S300TH                	| :white_check_mark: | :white_check_mark:   |
 
 
 More can be added easily: take a look at the files in the directory lib/ and find your inspiration on
