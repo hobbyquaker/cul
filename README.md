@@ -1,8 +1,8 @@
-# CUL module for Node.js
+# CUL
 
 [![NPM version](https://badge.fury.io/js/cul.svg)](http://badge.fury.io/js/cul)
 
-This is a Node.js module that can be used to interact with a [Busware CUL (USB)](http://busware.de/tiki-index.php?page=CUL) or
+This is a [Node.js](http://nodejs.org) module that can be used to interact with a [Busware CUL (USB)](http://busware.de/tiki-index.php?page=CUL) or
 [COC (RaspberryPi)](http://busware.de/tiki-index.php?page=COC) running [culfw](http://culfw.de). With CUL/COC and culfw
 many RF devices can be controlled, like [FS20](http://www.elv.de/fs20-funkschaltsystem.html),
 [Max](http://www.elv.de/max-imale-kontrolle.html), different temperature sensors, weather stations and more.
