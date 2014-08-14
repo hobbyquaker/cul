@@ -50,13 +50,13 @@ cul.on('data', function (raw) {
     * SlowRF (FS20, HMS, FHT, EM, ...)
     * MORITZ (MAX! devices)
     * AskSin (HomeMatic devices)
-* **parse** (default: true)    
+* **parse** (default: ```true```)    
     try to parse received messages
-* **init** (default: true)    
+* **init** (default: ```true```)    
     auto send "enable datareporting" command when connection is established (depends on chosen mode)
-* **coc** (default: false)    
+* **coc** (default: ```false```)    
     has to be enabled for usage with [COC](http://busware.de/tiki-index.php?page=COC)), changes default baudrate to 38400 and default serialport to /dev/ttyACM0
-* **rssi** (default: true)
+* **rssi** (default: ```true```)
     receive rssi (signal strength) value with every message (works only if init is true)
 
 pass options when creating a new cul object:
@@ -73,10 +73,13 @@ var cul = new Cul(options);
     
 * **close( )**    
 close the serialport connection
-* **write(raw)**    
-send message to cul. writes directly to the serialport
-* **cmd(protocol, arg1, arg2, ...)**    
-generate a command and send it to cul (see chapter "predefined commands" below)
+* **write(raw, callback)**    
+send message to cul. writes directly to the serialport    
+optional callback is passed through to serialport module and is called with params (err, res)
+* **cmd(protocol, arg1, arg2, ..., callback)**    
+generate a command and send it to cul (see chapter "predefined commands" below)    
+optional callback is passed through to serialport module and is called with params (err, res)
+
 
 ## Events
 
@@ -125,10 +128,20 @@ FS20, EM, HMS, WS, ...
 a unique address in this protocol
 * **device**  
 device type name
+* **rssi**    
+rssi value (only present if option rssi is true)
 * **data**    
 a object with the parsed data
 
-### Examples:
+
+### Examples
+
+Sample output of
+```javascript
+cul.on('data', function (raw, obj) {
+    console.log(raw, obj);
+});
+```
 
 #### FS20
 ```
@@ -142,10 +155,12 @@ F6C480011, {
         addressDevice: '00',
         addressDeviceElv: '1111',
         extended: false,
+        time: null,
         bidirectional: false,
         response: false,
-        cmd: 'on',
-        cmdRaw: '11'
+        cmdRaw: '11',
+        cmd: 'on'
+        
     }
 }
 ```
@@ -176,11 +191,11 @@ Until now only for a few selected devices data parsing is implemented.
 
 | protocol 	|         device        	| should work 	| tested 	|
 |:--------:	|:---------------------:	|:-----------:	|:------:	|
-| FS20     	| all Devices              	| :white_check_mark: | :white_check_mark:   |
-| HMS      	| HMS100T               	| :white_check_mark: | :white_check_mark:   |
+| FS20     	| all Devices              	|                    | :white_check_mark:   |
+| HMS      	| HMS100T               	|                    | :white_check_mark:   |
 | HMS      	| HMS100TF              	| :white_check_mark: |        	            |
-| EM       	| EM1000(-EM, -GZ, -WZ) 	| :white_check_mark: | :white_check_mark:   |
-| WS       	| S300TH                	| :white_check_mark: | :white_check_mark:   |
+| EM       	| EM1000(-EM, -GZ, -WZ) 	|                    | :white_check_mark:   |
+| WS       	| S300TH                	|                    | :white_check_mark:   |
 
 
 More can be added easily: take a look at the files in the directory lib/ and find your inspiration on
@@ -196,6 +211,7 @@ Pull requests welcome!
 
 ## Todo
 
+* parse rssi values
 * configurable serialport auto reconnect
 * more data parser modules ...
 * more command modules ...
