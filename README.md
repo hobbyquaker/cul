@@ -30,23 +30,16 @@ var cul = new Cul();
 
 // ready event is emitted after serial connection is established and culfw acknowledged data reporting
 cul.on('ready', function () {
-
     // send arbitrary commands to culfw
     cul.write('V');
-
 });
 
 cul.on('data', function (raw) {
-
     // show raw incoming messages
     console.log(raw);
-
 });
 
 ```
-
-
-
 
 ## Options
 
@@ -82,14 +75,14 @@ var cul = new Cul(options);
 close the serialport connection
 * **write(raw)**    
 send message to cul. writes directly to the serialport
-* **cmd(protocol, arg1, arg2, ...)**
+* **cmd(protocol, arg1, arg2, ...)**    
 generate a command and send it to cul (see chapter "predefined commands" below)
 
 ## Events
 
 * **ready**    
 called when serialport connection is established and (if init is true) datareporting is enabled
-* **close**
+* **close**    
 called when serialport connection is closed
 * **data(raw, obj)**    
 called for every received message
@@ -105,6 +98,8 @@ Example
 cul.write('F6C480111'); // Raw command
 ```
 ### Predefined commands
+
+(until now only FS20 is implemented)
 
 #### FS20
 
@@ -124,10 +119,14 @@ The 2nd param ```obj``` of the data event contains a object representation of th
 
 Each object has the following attributes:
 
-* protocol - FS20, EM, HMS, WS, ...
-* address - a unique address in this protocol
-* device (optional) - device type name
-* data - a object with the parsed data
+* **protocol**    
+FS20, EM, HMS, WS, ...
+* **address**    
+a unique address in this protocol
+* **device**  
+device type name
+* **data**    
+a object with the parsed data
 
 ### Examples:
 
@@ -136,6 +135,7 @@ Each object has the following attributes:
 F6C480011, {
     protocol: 'FS20',
     address: '6C4800',
+    device: 'FS20',
     data: {
         addressCode: '6C48',
         addressCodeElv: '2341 2131',
