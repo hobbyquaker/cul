@@ -46,16 +46,25 @@ cul.on('data', function (raw) {
 ```
 
 
-## Reference
 
-### Options
 
-* serialport (default: ```"/dev/ttyACM0"```)
-* baudrate (default: ```9600```)
-* mode (default: ```"SlowRF"```)
-* parse (default: true)
-* init (default: true)
-* coc (default: false) (has to be enabled for usage with [COC](http://busware.de/tiki-index.php?page=COC))
+## Options
+
+* **serialport** (default: ```"/dev/ttyAMA0"```)
+* **baudrate** (default: ```9600```)
+* **mode** (default: ```"SlowRF"```)    
+    possible values:
+    * SlowRF (FS20, HMS, FHT, EM, ...)
+    * MORITZ (MAX! devices)
+    * AskSin (HomeMatic devices)
+* **parse** (default: true)    
+    try to parse received messages
+* **init** (default: true)    
+    auto send "enable datareporting" command when connection is established (depends on chosen mode)
+* **coc** (default: false)    
+    has to be enabled for usage with [COC](http://busware.de/tiki-index.php?page=COC)), changes default baudrate to 38400 and default serialport to /dev/ttyACM0
+* **rssi** (default: true)
+    receive rssi (signal strength) value with every message (works only if init is true)
 
 pass options when creating a new cul object:
 ```javascript
@@ -66,17 +75,47 @@ var Cul = require('cul');
 var cul = new Cul(options);
 ```
 
-### Methods
+## Methods
 
-* write(raw)
-* cmd(protocol, arg1, arg2, ...)
-* close( )
+    
+* **close( )**    
+close the serialport connection
+* **write(raw)**    
+send message to cul. writes directly to the serialport
+* **cmd(protocol, arg1, arg2, ...)**
+generate a command and send it to cul (see chapter "predefined commands" below)
 
-### Events
+## Events
 
-* ready
-* close
-* data(raw, obj)
+* **ready**    
+called when serialport connection is established and (if init is true) datareporting is enabled
+* **close**
+called when serialport connection is closed
+* **data(raw, obj)**    
+called for every received message
+  * **raw** string, contains the raw message received from cul
+  * **obj** object, contains parsed message data (see "data parsing" below)
+   
+## Sending commands
+
+### Raw commands
+
+Example
+```javascript
+cul.write('F6C480111'); // Raw command
+```
+### Predefined commands
+
+#### FS20
+
+Take a look at the file lib/fs20.js - it exports a function cmd(housecode, address, command, time, bidi, res)
+
+example
+```javascript
+cul.cmd('FS20', '2341 2131', '1112', 'on'); // house code in ELV-Notation, address in ELV-Notation, command as text
+cul.cmd('FS20', '6C48', '01', '11');        // house code as hex string, address as hex string, command as hex string
+```
+(these examples result in the same message as the raw command example above.)
 
 
 ## Data parsing
@@ -137,11 +176,11 @@ Until now only for a few selected devices data parsing is implemented.
 
 | protocol 	|         device        	| should work 	| tested 	|
 |:--------:	|:---------------------:	|:-----------:	|:------:	|
-| FS20     	| all Devices              	| yes         	| yes      	|
-| HMS      	| HMS100T               	| yes         	| yes    	|
-| HMS      	| HMS100TF              	| yes         	|        	|
-| EM       	| EM1000(-EM, -GZ, -WZ) 	| yes         	| yes    	|
-| WS       	| S300TH                	| yes         	| yes    	|
+| FS20     	| all Devices              	| :white_check_mark: | :white_check_mark:   |
+| HMS      	| HMS100T               	| :white_check_mark: | :white_check_mark:   |
+| HMS      	| HMS100TF              	| :white_check_mark: |        	            |
+| EM       	| EM1000(-EM, -GZ, -WZ) 	| :white_check_mark: | :white_check_mark:   |
+| WS       	| S300TH                	| :white_check_mark: | :white_check_mark:   |
 
 
 More can be added easily: take a look at the files in the directory lib/ and find your inspiration on
@@ -149,41 +188,10 @@ http://sourceforge.net/p/fhem/code/HEAD/tree/trunk/fhem/FHEM/
 
 Pull requests welcome!
 
-## Sending commands
+## further reading
 
-### Raw commands
+* [culfw command reference](http://culfw.de/commandref.html)
 
-Example
-```javascript
-cul.write('F6C480111'); // Raw command
-```
-### Predefined commands
-
-#### FS20
-
-Take a look at the file lib/fs20.js - it exports a function cmd(housecode, address, command, time, bidi, res)
-
-example
-```javascript
-cul.cmd('FS20', '2341 2131', '1112', 'on'); // house code in ELV-Notation, address in ELV-Notation, command as text
-cul.cmd('FS20', '6C48', '01', '11');        // house code as hex string, address as hex string, command as hex string
-```
-(these examples result in the same message as the raw command example above.
-
-
-## COC usage
-
-[Busware COC (RaspberryPi)](http://busware.de/tiki-index.php?page=COC)
-
-```javascript
-var Cul = require('cul');
-var cul = new Cul({
-    coc: true,
-    baudrate: 38400,
-    serialport: '/dev/ttyAMA0'
-});
-
-```
 
 
 ## Todo
