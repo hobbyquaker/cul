@@ -61,11 +61,15 @@ cul.on('data', function (raw) {
 
 pass options when creating a new cul object:
 ```javascript
-var options = {
-    serialport: '/dev/ttyACM1'
-};
 var Cul = require('cul');
-var cul = new Cul(options);
+var fs20 = new Cul({
+    serialport: '/dev/ttyACM0',
+    mode: 'SlowRF'
+});
+var max = new Cul({
+    serialport: '/dev/ttyACM1',
+    mode: 'MORITZ'
+});
 ```
 
 ## Methods
