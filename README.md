@@ -133,7 +133,7 @@ a unique address in this protocol
 * **device**  
 device type name
 * **rssi**    
-rssi value (only present if option rssi is true)
+radio signal strength value (only present if option rssi is true)
 * **data**    
 a object with the parsed data
 
@@ -153,6 +153,7 @@ F6C480011, {
     protocol: 'FS20',
     address: '6C4800',
     device: 'FS20',
+    rssi: -74.5,
     data: {
         addressCode: '6C48',
         addressCodeElv: '2341 2131',
@@ -175,6 +176,7 @@ E020563037A01000200, {
     protocol: 'EM',
     address: '0205',
     device: 'EM1000-EM',
+    rssi: -62,
     data: { seq: 99, total: 31235, current: 1, peak: 2 }
 }
 ```
@@ -185,6 +187,7 @@ K11455258, {
     protocol: 'WS',
     address: 1,
     device: 'S300TH',
+    rssi: -86,
     data: { temperature: 24.5, humidity: 58.5 },
 }
 ```
@@ -215,7 +218,6 @@ Pull requests welcome!
 
 ## Todo
 
-* parse rssi values
 * configurable serialport auto reconnect
 * more data parser modules ...
 * more command modules ...
