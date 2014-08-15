@@ -71,6 +71,7 @@ var Cul = function (options) {
         // Set flag, binary or
         options.initCmd = options.initCmd | 0x20;
     }
+    options.initCmd = 'X' + ('0' + options.initCmd.toString(16)).slice(-2);
 
     var modeCmd = modes[options.mode.toLowerCase()] ? modes[options.mode.toLowerCase()].start : undefined;
     var stopCmd;
@@ -130,6 +131,7 @@ var Cul = function (options) {
 
 
     this.write = function send(data, callback) {
+        //console.log('->', data)
         serialPort.write(data + '\r\n', callback);
     };
 
@@ -166,6 +168,7 @@ var Cul = function (options) {
         var message;
         var command;
         var p;
+        var rssi;
 
         if (options.parse) {
             command = data[0];
@@ -179,6 +182,12 @@ var Cul = function (options) {
             }
 
         }
+
+        if (options.rssi) {
+            rssi = parseInt(data.slice(-2), 16);
+            message.rssi =  (rssi >= 128 ? ((rssi - 256) / 2 - 74) : (rssi / 2 - 74));
+        }
+
         that.emit('data', data, message);
 
     }
