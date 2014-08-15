@@ -220,7 +220,15 @@ Pull requests welcome!
 
 * configurable serialport auto reconnect
 * more data parser modules ...
-* more command modules ...
+    * MORITZ (MAX!)
+    * ESA
+    * FHT
+    * HMS: HMS100WD, RM100-2, HMS100TFK, HMS100MG, HMS100CO, HMS100FIT
+    * ...
+* more command modules
+    * MORITZ
+    * FHT
+    
 * more tests ...
 * [CUNO](http://busware.de/tiki-index.php?page=CUNO) support
 
