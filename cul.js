@@ -173,23 +173,18 @@ var Cul = function (options) {
         if (options.parse) {
             command = data[0];
             message = {};
-
             if (commands[command]) {
                 p = commands[command].toLowerCase();
                 if (protocol[p] && typeof protocol[p].parse === 'function') {
                     message = protocol[p].parse(data);
                 }
             }
-
+            if (options.rssi) {
+                rssi = parseInt(data.slice(-2), 16);
+                message.rssi =  (rssi >= 128 ? ((rssi - 256) / 2 - 74) : (rssi / 2 - 74));
+            }
         }
-
-        if (options.rssi) {
-            rssi = parseInt(data.slice(-2), 16);
-            message.rssi =  (rssi >= 128 ? ((rssi - 256) / 2 - 74) : (rssi / 2 - 74));
-        }
-
         that.emit('data', data, message);
-
     }
 
     return this;
