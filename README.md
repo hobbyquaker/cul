@@ -149,11 +149,11 @@ cul.on('data', function (raw, obj) {
 
 #### FS20
 ```
-F6C480011, {
+F6C480011E5, {
     protocol: 'FS20',
     address: '6C4800',
     device: 'FS20',
-    rssi: -74.5,
+    rssi: -87.5,
     data: {
         addressCode: '6C48',
         addressCodeElv: '2341 2131',
@@ -172,22 +172,22 @@ F6C480011, {
 
 #### EM1000
 ```
-E020563037A01000200, {
+E020563037A01000200EC, {
     protocol: 'EM',
     address: '0205',
     device: 'EM1000-EM',
-    rssi: -62,
+    rssi: -84,
     data: { seq: 99, total: 31235, current: 1, peak: 2 }
 }
 ```
 
 #### S300TH
 ```
-K11455258, {
+K1145525828, {
     protocol: 'WS',
     address: 1,
     device: 'S300TH',
-    rssi: -86,
+    rssi: -28,
     data: { temperature: 24.5, humidity: 58.5 },
 }
 ```
