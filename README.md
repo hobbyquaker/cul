@@ -47,9 +47,9 @@ cul.on('data', function (raw) {
 * **baudrate** (default: ```9600```)
 * **mode** (default: ```"SlowRF"```)    
     possible values:
-    * SlowRF (FS20, HMS, FHT, EM, ...)
-    * MORITZ (MAX! devices)
-    * AskSin (HomeMatic devices)
+    * ```SlowRF``` (FS20, HMS, FHT, EM, ...)
+    * ```MORITZ``` (MAX! devices)
+    * ```AskSin``` (HomeMatic devices)
 * **parse** (default: ```true```)    
     try to parse received messages
 * **init** (default: ```true```)    
@@ -57,7 +57,7 @@ cul.on('data', function (raw) {
 * **coc** (default: ```false```)    
     has to be enabled for usage with [COC](http://busware.de/tiki-index.php?page=COC)), changes default baudrate to 38400 and default serialport to /dev/ttyACM0
 * **rssi** (default: ```true```)
-    receive rssi (signal strength) value with every message (works only if init is true)
+    receive rssi (signal strength) value with every message (works only if init and parse are both true)
 
 pass options when creating a new cul object:
 ```javascript
