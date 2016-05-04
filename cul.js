@@ -57,11 +57,15 @@ var Cul = function (options) {
     options.init =              options.init        ||      true;
     options.parse =             options.parse       ||      true;
     options.coc =               options.coc         ||      false;
+    options.scc =               options.scc         ||      false;
     options.rssi =              options.rssi        ||      true;
 
     if (options.coc) {
         options.baudrate =      options.baudrate    ||      38400;
         options.serialport =    options.serialport  ||      '/dev/ttyACM0';
+    } else if (options.scc) {
+        options.baudrate =      options.baudrate    ||      38400;
+        options.serialport =    options.serialport  ||      '/dev/ttyAMA0';
     } else {
         options.baudrate =      options.baudrate    ||      9600;
         options.serialport =    options.serialport  ||      '/dev/ttyAMA0';
