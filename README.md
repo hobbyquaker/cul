@@ -2,15 +2,15 @@
 
 [![NPM version](https://badge.fury.io/js/cul.svg)](http://badge.fury.io/js/cul)
 
-This is a [Node.js](http://nodejs.org) module that can be used to interact with a [Busware CUL (USB)](http://busware.de/tiki-index.php?page=CUL) or
-[COC (RaspberryPi)](http://busware.de/tiki-index.php?page=COC) running [culfw](http://culfw.de). With CUL/COC and culfw
+This is a [Node.js](http://nodejs.org) module that can be used to interact with a [Busware CUL (USB)](http://busware.de/tiki-index.php?page=CUL),
+[COC (RaspberryPi)](http://busware.de/tiki-index.php?page=COC) or [SCC (RaspberryPi)](http://busware.de/tiki-index.php?page=SCC) running [culfw](http://culfw.de). With CUL/COC/SCC and culfw
 many RF devices can be controlled, like [FS20](http://www.elv.de/fs20-funkschaltsystem.html),
 [MAX!](http://www.elv.de/max-imale-kontrolle.html), temperature sensors, weather stations and more.
 [Click here for a full list of supported Devices](http://culfw.de/culfw.html#Features)
 
 #### Purpose
 
-This module provides a thin abstraction for the serial port communication with CUL/COC and lightweight parse and command
+This module provides a thin abstraction for the serial port communication with CUL/COC/SCC and lightweight parse and command
 wrappers. It's intended to be used in different Node.js based Home Automation software.
 
 This module is also used by the Home Automation project "[ioBroker](https://github.com/iobroker/ioBroker.nodejs)".
@@ -56,6 +56,8 @@ cul.on('data', function (raw) {
     auto send "enable datareporting" command when connection is established (depends on chosen mode)
 * **coc** (default: ```false```)    
     has to be enabled for usage with [COC](http://busware.de/tiki-index.php?page=COC)), changes default baudrate to 38400 and default serialport to /dev/ttyACM0
+* **scc** (default: ```false```)    
+    has to be enabled for usage with [SCC](http://busware.de/tiki-index.php?page=SCC)), changes default baudrate to 38400 and default serialport to /dev/ttyAMA0
 * **rssi** (default: ```true```)
     receive rssi (signal strength) value with every message (works only if init and parse are both true)
 
@@ -127,7 +129,7 @@ The 2nd param ```obj``` of the data event contains a object representation of th
 Each object has the following attributes:
 
 * **protocol**    
-FS20, EM, HMS, WS, ...
+FS20, EM, HMS, WS, MORITZ, ...
 * **address**    
 a unique address in this protocol
 * **device**  
@@ -192,6 +194,23 @@ K1145525828, {
 }
 ```
 
+#### Moritz (MAX!)
+```
+Z0CE404420E0E520DD7BA0018AA01, { protocol: 'MORITZ',
+  type: 'Z',
+  len: 12,
+  msgcnt: 228,
+  msgFlag: '04',
+  msgTypeRaw: '42',
+  msgType: 'WallThermostatControl',
+  src: '0e0e52',
+  dst: '0dd7ba',
+  groupid: 0,
+  payload: '18AA01',
+  checksum: '',
+  WallThermostatControl: { desired: 12, measured: 17 },
+  rssi: -73.5 }
+```
 
 
 Until now only for a few selected devices data parsing is implemented.
@@ -203,7 +222,10 @@ Until now only for a few selected devices data parsing is implemented.
 | HMS      	| HMS100TF              	| :white_check_mark: |        	            |
 | EM       	| EM1000(-EM, -GZ, -WZ) 	| :white_check_mark: | :white_check_mark:   |
 | WS       	| S300TH                	| :white_check_mark: | :white_check_mark:   |
-
+| MORITZ   	| HeatingThermostat         | :white_check_mark: | :white_check_mark:   |
+| MORITZ   	| WallMountedThermostat     | :white_check_mark: | :white_check_mark:   |
+| MORITZ   	| ShutterContact            | :white_check_mark: | :white_check_mark:   |
+| MORITZ   	| PushButton                | :white_check_mark: | :white_check_mark:   |
 
 More can be added easily: take a look at the files in the directory lib/ and find your inspiration on
 http://sourceforge.net/p/fhem/code/HEAD/tree/trunk/fhem/FHEM/
@@ -220,13 +242,13 @@ Pull requests welcome!
 
 * configurable serialport auto reconnect
 * more data parser modules
-  * MORITZ (MAX!)
+  * MORITZ (MAX!) (inprogress)
   * ESA
   * FHT
   * HMS: HMS100WD, RM100-2, HMS100TFK, HMS100MG, HMS100CO, HMS100FIT
   * ...
 * more command modules
-  * MORITZ
+  * MORITZ (inprogress)
   * FHT
   * ...
 * more tests
