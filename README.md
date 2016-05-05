@@ -196,20 +196,39 @@ K1145525828, {
 
 #### Moritz (MAX!)
 ```
-Z0CE404420E0E520DD7BA0018AA01, { protocol: 'MORITZ',
-  type: 'Z',
-  len: 12,
-  msgcnt: 228,
-  msgFlag: '04',
-  msgTypeRaw: '42',
-  msgType: 'WallThermostatControl',
-  src: '0e0e52',
-  dst: '0dd7ba',
-  groupid: 0,
-  payload: '18AA01',
-  checksum: '',
-  WallThermostatControl: { desired: 12, measured: 17 },
-  rssi: -73.5 }
+V 1.66 CSM868 { data: { culfw: { version: '1.66', hardware: 'CSM868' } },
+  protocol: 'MORITZ',
+  rssi: -22 }
+Z0C000442113AD30C4F0D001CB41D { data: 
+   { len: 12,
+     msgcnt: 0,
+     msgFlag: '04',
+     msgTypeRaw: '42',
+     msgType: 'WallThermostatControl',
+     src: '113ad3',
+     dst: '0c4f0d',
+     groupid: 0,
+     payload: '1CB41D',
+     desiredTemperature: 14,
+     measuredTemperature: 18 },
+  protocol: 'MORITZ',
+  address: '113ad3',
+  device: 'WallMountedThermostat',
+  rssi: -59.5 }
+Z0E0002020C4F0D113AD3000119001C1E { data: 
+   { len: 14,
+     msgcnt: 0,
+     msgFlag: '02',
+     msgTypeRaw: '02',
+     msgType: 'Ack',
+     src: '0c4f0d',
+     dst: '113ad3',
+     groupid: 0,
+     payload: '0119001C1E',
+     dstDevice: 'WallMountedThermostat' },
+  protocol: 'MORITZ',
+  address: '0c4f0d',
+  rssi: -59 }
 ```
 
 
