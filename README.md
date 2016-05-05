@@ -229,6 +229,25 @@ Z0E0002020C4F0D113AD3000119001C1E { data:
   protocol: 'MORITZ',
   address: '0c4f0d',
   rssi: -59 }
+  Z0B4F06300E3F3C1234560012F7 { data: 
+   { len: 11,
+     msgcnt: 79,
+     msgFlag: '06',
+     msgTypeRaw: '30',
+     msgType: 'ShutterContactState',
+     src: '0e3f3c',
+     dst: '123456',
+     groupid: 0,
+     payload: '12F7',
+     isopen: 1,
+     unkbits: 4,
+     rferror: 0,
+     batterlow: 0,
+     battery: 'ok' },
+  protocol: 'MORITZ',
+  address: '0e3f3c',
+  device: 'ShutterContact',
+  rssi: -78.5 }
 ```
 
 
@@ -241,10 +260,10 @@ Until now only for a few selected devices data parsing is implemented.
 | HMS      	| HMS100TF              	| :white_check_mark: |        	            |
 | EM       	| EM1000(-EM, -GZ, -WZ) 	| :white_check_mark: | :white_check_mark:   |
 | WS       	| S300TH                	| :white_check_mark: | :white_check_mark:   |
-| MORITZ   	| HeatingThermostat         | :white_check_mark: | :white_check_mark:   |
-| MORITZ   	| WallMountedThermostat     | :white_check_mark: | :white_check_mark:   |
+| MORITZ   	| HeatingThermostat         | :white_check_mark: |                      |
+| MORITZ   	| WallMountedThermostat     | :white_check_mark: |                      |
 | MORITZ   	| ShutterContact            | :white_check_mark: | :white_check_mark:   |
-| MORITZ   	| PushButton                | :white_check_mark: | :white_check_mark:   |
+| MORITZ   	| PushButton                | :white_check_mark: |                      |
 
 More can be added easily: take a look at the files in the directory lib/ and find your inspiration on
 http://sourceforge.net/p/fhem/code/HEAD/tree/trunk/fhem/FHEM/
