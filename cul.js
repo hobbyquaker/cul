@@ -19,7 +19,7 @@ var protocol = {
     //fht:                      require('./lib/fht.js'),
     fs20:                       require('./lib/fs20.js'),
     hms:                        require('./lib/hms.js'),
-    //moritz:                   require('./lib/moritz.js'),
+    moritz:                   require('./lib/moritz.js'),
     //tx:                       require('./lib/tx.js'),
     //uniroll:                  require('./lib/uniroll.js'),
     ws:                         require('./lib/ws.js')
@@ -35,6 +35,7 @@ var commands = {
     'S':                        'ESA',
     'R':                        'Hoermann',
     'A':                        'AskSin',
+    'V':                        'MORITZ',
     'Z':                        'MORITZ',
     'o':                        'Obis',
     't':                        'TX',
@@ -57,11 +58,15 @@ var Cul = function (options) {
     options.init =              options.init        ||      true;
     options.parse =             options.parse       ||      true;
     options.coc =               options.coc         ||      false;
+    options.scc =               options.scc         ||      false;
     options.rssi =              options.rssi        ||      true;
 
     if (options.coc) {
         options.baudrate =      options.baudrate    ||      38400;
         options.serialport =    options.serialport  ||      '/dev/ttyACM0';
+    } else if (options.scc) {
+        options.baudrate =      options.baudrate    ||      38400;
+        options.serialport =    options.serialport  ||      '/dev/ttyAMA0';
     } else {
         options.baudrate =      options.baudrate    ||      9600;
         options.serialport =    options.serialport  ||      '/dev/ttyAMA0';
@@ -81,7 +86,7 @@ var Cul = function (options) {
     }
 
     var spOptions = {baudrate: options.baudrate};
-    if (options.coc) spOptions.parser = SerialPortModule.parsers.readline('\r\n');
+    if (options.coc || options.scc) spOptions.parser = SerialPortModule.parsers.readline('\r\n');
     var serialPort = new SerialPort(options.serialport, spOptions);
 
     this.close = function (callback) {
