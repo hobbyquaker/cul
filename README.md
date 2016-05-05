@@ -13,8 +13,6 @@ many RF devices can be controlled, like [FS20](http://www.elv.de/fs20-funkschalt
 This module provides a thin abstraction for the serial port communication with CUL/COC and lightweight parse and command
 wrappers. It's intended to be used in different Node.js based Home Automation software.
 
-This module is also used by the Home Automation project "[ioBroker](https://github.com/iobroker/ioBroker.nodejs)".
-
 #### Credits
 
 based on the work of Rudolf Koenig, Author of [culfw](http://culfw.de) and [fhem](http://fhem.de) (both licensed under GPLv2)
@@ -246,4 +244,4 @@ Pull requests welcome! :smile:
 
 [Licensed under GPLv2](LICENSE)
 
-Copyright (c) 2014 hobbyquaker <hq@ccu.io>
+ Copyright (c) 2014 hobbyquaker <hq@ccu.io>
