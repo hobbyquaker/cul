@@ -15,7 +15,9 @@
     "culfw",
     "fhem"
   ],
-  "contributors": [],
+  "contributors": [
+    "Michel Verbraak https://github.com/1stsetup"
+  ],
   "repository": {
     "type": "git",
     "url": "git://github.com/hobbyquaker/cul.git"
