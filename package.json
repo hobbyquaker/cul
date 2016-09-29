@@ -30,7 +30,7 @@
   "scripts": {
     "test": "grunt test"
   },
-  "license": "GPLv2",
+  "license": "GPL-2.0",
   "devDependencies": {
     "grunt": "latest",
     "grunt-simple-mocha": "latest",
