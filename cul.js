@@ -10,8 +10,7 @@
 var util =                      require('util');
 var EventEmitter =              require('events').EventEmitter;
 
-var SerialPortModule =          require("serialport");
-var SerialPort =                SerialPortModule.SerialPort;
+var SerialPort =                require("serialport");
 
 var protocol = {
     em:                         require('./lib/em.js'),
@@ -19,7 +18,7 @@ var protocol = {
     //fht:                      require('./lib/fht.js'),
     fs20:                       require('./lib/fs20.js'),
     hms:                        require('./lib/hms.js'),
-    moritz:                   require('./lib/moritz.js'),
+    moritz:                     require('./lib/moritz.js'),
     //tx:                       require('./lib/tx.js'),
     //uniroll:                  require('./lib/uniroll.js'),
     ws:                         require('./lib/ws.js')

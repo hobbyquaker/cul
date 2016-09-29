@@ -307,7 +307,7 @@ Pull requests welcome! :smile:
 
 [Licensed under GPLv2](LICENSE)
 
- Copyright (c) 2014 hobbyquaker <hq@ccu.io>
+ Copyright (c) 2014-2016 hobbyquaker <hq@ccu.io>
 
 [gpl-badge]: https://img.shields.io/badge/License-GPL-blue.svg?style=flat
 [gpl-url]: LICENSE
