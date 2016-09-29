@@ -1,6 +1,9 @@
 # cul
 
+[![License][gpl-badge]][gpl-url]
 [![NPM version](https://badge.fury.io/js/cul.svg)](http://badge.fury.io/js/cul)
+[![Dependency Status](https://img.shields.io/gemnasium/hobbyquaker/cul.svg?maxAge=2592000)](https://gemnasium.com/github.com/hobbyquaker/cul)
+[![Build Status](https://travis-ci.org/hobbyquaker/cul.svg?branch=master)](https://travis-ci.org/hobbyquaker/cul)
 
 This is a [Node.js](http://nodejs.org) module that can be used to interact with a [Busware CUL (USB)](http://busware.de/tiki-index.php?page=CUL),
 [COC (RaspberryPi)](http://busware.de/tiki-index.php?page=COC) or [SCC (RaspberryPi)](http://busware.de/tiki-index.php?page=SCC) running [culfw](http://culfw.de). With CUL/COC/SCC and culfw
@@ -305,3 +308,6 @@ Pull requests welcome! :smile:
 [Licensed under GPLv2](LICENSE)
 
  Copyright (c) 2014 hobbyquaker <hq@ccu.io>
+
+[gpl-badge]: https://img.shields.io/badge/License-GPL-blue.svg?style=flat
+[gpl-url]: LICENSE
