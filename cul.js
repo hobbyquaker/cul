@@ -105,10 +105,15 @@ var Cul = function (options) {
     serialPort.on("open", function () {
 
         if (options.init) {
-            that.write(options.initCmd, function (err, res) {
+            that.write(options.initCmd, function (err) {
                 if (err) throw err;
+            });
+            serialPort.drain(function(err){
                 if (modeCmd) {
-                    that.write(modeCmd, function (err, res) {
+                    that.write(modeCmd, function (err) {
+                        if (err) throw err;
+                    });
+                    serialPort.drain(function(err){
                         if (err) throw err;
                         ready();
                     });
@@ -136,7 +141,8 @@ var Cul = function (options) {
 
     this.write = function send(data, callback) {
         //console.log('->', data)
-        serialPort.write(data + '\r\n', callback);
+        serialPort.write(data + '\r\n');
+        serialPort.drain(callback);
     };
 
     this.cmd = function cmd() {
