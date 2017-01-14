@@ -126,11 +126,16 @@ var Cul = function (options) {
         }
 
         function ready() {
+            var buff = '';
+
             serialPort.on('data', function (data) {
-                data = data.toString();
-                var tmp = data.split('\r\n');
-                for (var i = 0, l = tmp.length; i < l; i++) {
-                    if (typeof tmp[i] === 'string' && tmp[i] !== '') parse(tmp[i]);
+                buff += data.toString();
+                if (buff.indexOf('\n') !== -1) {
+                    var tmp = buff.split('\r\n');
+                    buff = tmp.pop(); // store the start of next command
+                    for (var i = 0, l = tmp.length; i < l; i++) {
+                        if (typeof tmp[i] === 'string' && tmp[i] !== '') parse(tmp[i]);
+                    }
                 }
             });
             that.emit('ready');
