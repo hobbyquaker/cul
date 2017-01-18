@@ -84,7 +84,10 @@ var Cul = function (options) {
         stopCmd = modes[options.mode.toLowerCase()].stop;
     }
 
-    var spOptions = {baudrate: options.baudrate};
+    var spOptions = {
+        baudrate: options.baudrate,
+		parser: SerialPort.parsers.byteDelimiter([10,13])
+    };
     if (options.coc || options.scc) spOptions.parser = SerialPortModule.parsers.readline('\r\n');
     var serialPort = new SerialPort(options.serialport, spOptions);
 
@@ -126,13 +129,7 @@ var Cul = function (options) {
         }
 
         function ready() {
-            serialPort.on('data', function (data) {
-                data = data.toString();
-                var tmp = data.split('\r\n');
-                for (var i = 0, l = tmp.length; i < l; i++) {
-                    if (typeof tmp[i] === 'string' && tmp[i] !== '') parse(tmp[i]);
-                }
-            });
+            serialPort.on('data', parse);
             that.emit('ready');
         }
 
@@ -174,7 +171,9 @@ var Cul = function (options) {
     };
 
     function parse(data) {
-
+        if (!data) return;
+        data = data.toString();
+        
         var message;
         var command;
         var p;
