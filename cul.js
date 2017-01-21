@@ -85,7 +85,7 @@ var Cul = function (options) {
     }
 
     var spOptions = {baudrate: options.baudrate};
-    if (options.coc || options.scc) spOptions.parser = SerialPortModule.parsers.readline('\r\n');
+    if (options.coc || options.scc) spOptions.parser = SerialPort.parsers.readline('\r\n');
     var serialPort = new SerialPort(options.serialport, spOptions);
 
     this.close = function (callback) {
