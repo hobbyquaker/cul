@@ -86,9 +86,8 @@ var Cul = function (options) {
 
     var spOptions = {
         baudrate: options.baudrate,
-		parser: SerialPort.parsers.byteDelimiter([10,13])
+		parser: SerialPort.parsers.readline('\r\n')
     };
-    if (options.coc || options.scc) spOptions.parser = SerialPortModule.parsers.readline('\r\n');
     var serialPort = new SerialPort(options.serialport, spOptions);
 
     this.close = function (callback) {
