@@ -267,7 +267,7 @@ Until now only for a few selected devices data parsing is implemented.
 | MORITZ   	| PushButton                | :white_check_mark: |                      |
 
 More can be added easily: take a look at the files in the directory lib/ and find your inspiration on
-http://sourceforge.net/p/fhem/code/HEAD/tree/trunk/fhem/FHEM/
+https://svn.fhem.de/fhem/trunk/fhem/FHEM/
 
 Pull requests welcome!
 
