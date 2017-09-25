@@ -1,9 +1,13 @@
 {
-  "version": "0.4.2",
+  "version": "0.5.0",
   "name": "cul",
   "description": "Module to interact with Busware CUL / culfw",
   "homepage": "http://github.com/hobbyquaker/cul",
   "author": "hobbyquaker <hq@ccu.io>",
+  "engines": {
+    "node": ">=6.0.0"
+  },
+  "engineStrict": true,
   "keywords": [
     "Smarthome",
     "Home Automation",
@@ -32,15 +36,12 @@
     "url": "https://github.com/hobbyquaker/cul/issues"
   },
   "scripts": {
-    "test": "grunt test"
+    "test": "xo && mocha tests/*"
   },
   "license": "GPL-2.0",
   "devDependencies": {
     "camo-purge": "latest",
-    "grunt": "latest",
-    "grunt-cli": "latest",
-    "grunt-simple-mocha": "latest",
-    "grunt-xo": "latest",
+    "xo": "latest",
     "mocha": "latest",
     "should": "latest"
   },

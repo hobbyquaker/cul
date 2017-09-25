@@ -14,12 +14,9 @@ const SerialPort = require('serialport');
 
 const protocol = {
     em: require('./lib/em.js'),
-    // Esa:                      require('./lib/esa.js'),
-    // fht:                      require('./lib/fht.js'),
     fs20: require('./lib/fs20.js'),
     hms: require('./lib/hms.js'),
     moritz: require('./lib/moritz.js'),
-    // Tx:                       require('./lib/tx.js'),
     uniroll: require('./lib/uniroll.js'),
     ws: require('./lib/ws.js')
 };

@@ -252,7 +252,7 @@ Z0E0002020C4F0D113AD3000119001C1E { data:
 ```
 
 
-Until now only for a few selected devices data parsing is implemented.
+Until now only for a few selected devices data parsing respectively a command wrapper is implemented.
 
 | protocol 	|         device        	| should work 	| tested 	|
 |:---------	|:----------------------	|:-----------:	|:------:	|
@@ -265,6 +265,7 @@ Until now only for a few selected devices data parsing is implemented.
 | MORITZ   	| WallMountedThermostat     | :white_check_mark: |                      |
 | MORITZ   	| ShutterContact            | :white_check_mark: | :white_check_mark:   |
 | MORITZ   	| PushButton                | :white_check_mark: |                      |
+| Uniroll  	| All Devices               | :white_check_mark: |                      |
 
 More can be added easily: take a look at the files in the directory lib/ and find your inspiration on
 https://svn.fhem.de/fhem/trunk/fhem/FHEM/
@@ -285,12 +286,10 @@ Pull requests welcome!
   * ESA
   * FHT
   * HMS: HMS100WD, RM100-2, HMS100TFK, HMS100MG, HMS100CO, HMS100FIT
-  * Uniroll
   * ...
 * more command modules
   * MORITZ (inprogress)
   * FHT
-  * Uniroll
   * ...
 * more tests
 * [CUNO](http://busware.de/tiki-index.php?page=CUNO) support
