@@ -1,24 +1,28 @@
 # cul
 
-[![License][gpl-badge]][gpl-url]
 [![NPM version](https://badge.fury.io/js/cul.svg)](http://badge.fury.io/js/cul)
 [![Dependency Status](https://img.shields.io/gemnasium/hobbyquaker/cul.svg?maxAge=2592000)](https://gemnasium.com/github.com/hobbyquaker/cul)
 [![Build Status](https://travis-ci.org/hobbyquaker/cul.svg?branch=master)](https://travis-ci.org/hobbyquaker/cul)
+[![XO code style](https://img.shields.io/badge/code_style-XO-5ed9c7.svg)](https://github.com/sindresorhus/xo)
+[![License][gpl-badge]][gpl-url]
 
-This is a [Node.js](http://nodejs.org) module that can be used to interact with a [Busware CUL (USB)](http://busware.de/tiki-index.php?page=CUL),
-[COC (RaspberryPi)](http://busware.de/tiki-index.php?page=COC) or [SCC (RaspberryPi)](http://busware.de/tiki-index.php?page=SCC) running [culfw](http://culfw.de). With CUL/COC/SCC and culfw
-many RF devices can be controlled, like [FS20](http://www.elv.de/fs20-funkschaltsystem.html),
+This is a [Node.js](http://nodejs.org) module that can be used to interact with a 
+[Busware CUL (USB)](http://busware.de/tiki-index.php?page=CUL), 
+[COC (RaspberryPi)](http://busware.de/tiki-index.php?page=COC) or 
+[SCC (RaspberryPi)](http://busware.de/tiki-index.php?page=SCC) running [culfw](http://culfw.de). With CUL/COC/SCC and 
+culfw many RF devices can be controlled, like [FS20](http://www.elv.de/fs20-funkschaltsystem.html),
 [MAX!](http://www.elv.de/max-imale-kontrolle.html), temperature sensors, weather stations and more.
-[Click here for a full list of supported Devices](http://culfw.de/culfw.html#Features)
+See the [full list of supported Devices](http://culfw.de/culfw.html#Features).
 
 #### Purpose
 
-This module provides a thin abstraction for the serial port communication with CUL/COC/SCC and lightweight parse and command
-wrappers. It's intended to be used in different Node.js based Home Automation software.
+This module provides a thin abstraction for the serial port communication with CUL/COC/SCC and lightweight parse and 
+command wrappers. It's intended to be used in different Node.js based Home Automation software.
 
 #### Credits
 
-based on the work of Rudolf Koenig, Author of [culfw](http://culfw.de) and [fhem](http://fhem.de) (both licensed under GPLv2)
+based on the work of Rudolf Koenig, Author of [culfw](http://culfw.de) and [fhem](http://fhem.de) (both licensed under 
+GPLv2)
 
 
 ## Usage
@@ -251,8 +255,7 @@ Z0E0002020C4F0D113AD3000119001C1E { data:
   rssi: -78.5 }
 ```
 
-
-Until now only for a few selected devices data parsing respectively a command wrapper is implemented.
+Until now for these devices data parsing and/or a command wrapper is implemented:
 
 | protocol 	|         device        	| should work 	| tested 	|
 |:---------	|:----------------------	|:-----------:	|:------:	|
@@ -272,10 +275,10 @@ https://svn.fhem.de/fhem/trunk/fhem/FHEM/
 
 Pull requests welcome!
 
+
 ## further reading
 
 * [culfw command reference](http://culfw.de/commandref.html)
-
 
 
 ## Todo
@@ -308,7 +311,7 @@ Pull requests welcome! :smile:
 
 [Licensed under GPLv2](LICENSE)
 
- Copyright (c) 2014-2016 hobbyquaker <hq@ccu.io>
+Copyright (c) 2014-2017 hobbyquaker <hq@ccu.io>
 
 [gpl-badge]: https://img.shields.io/badge/License-GPL-blue.svg?style=flat
 [gpl-url]: LICENSE
