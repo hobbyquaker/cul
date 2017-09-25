@@ -36,9 +36,18 @@
   },
   "license": "GPL-2.0",
   "devDependencies": {
+    "camo-purge": "latest",
     "grunt": "latest",
+    "grunt-cli": "latest",
     "grunt-simple-mocha": "latest",
+    "grunt-xo": "latest",
     "mocha": "latest",
     "should": "latest"
+  },
+  "xo": {
+    "space": 4,
+    "ignore": [
+      "lib/moritz.js"
+    ]
   }
 }

@@ -285,10 +285,12 @@ Pull requests welcome!
   * ESA
   * FHT
   * HMS: HMS100WD, RM100-2, HMS100TFK, HMS100MG, HMS100CO, HMS100FIT
+  * Uniroll
   * ...
 * more command modules
   * MORITZ (inprogress)
   * FHT
+  * Uniroll
   * ...
 * more tests
 * [CUNO](http://busware.de/tiki-index.php?page=CUNO) support
