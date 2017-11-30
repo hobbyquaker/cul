@@ -18,7 +18,8 @@ const protocol = {
     hms: require('./lib/hms.js'),
     moritz: require('./lib/moritz.js'),
     uniroll: require('./lib/uniroll.js'),
-    ws: require('./lib/ws.js')
+    ws: require('./lib/ws.js'),
+    fht: require('./lib/fht.js')
 };
 
 // http://culfw.de/commandref.html
