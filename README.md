@@ -8,8 +8,8 @@
 
 This is a [Node.js](http://nodejs.org) module that can be used to interact with a
 [Busware CUL (USB)](http://busware.de/tiki-index.php?page=CUL),
-[COC (RaspberryPi)](http://busware.de/tiki-index.php?page=COC) or
-[SCC (RaspberryPi)](http://busware.de/tiki-index.php?page=SCC) running [culfw](http://culfw.de). With CUL/COC/SCC and
+[COC (RaspberryPi)](http://busware.de/tiki-index.php?page=COC),
+[SCC (RaspberryPi)](http://busware.de/tiki-index.php?page=SCC) or [CUNO](http://busware.de/tiki-index.php?page=CUNO) running [culfw](http://culfw.de). With CUL/COC/SCC/CUNO and
 culfw many RF devices can be controlled, like [FS20](http://www.elv.de/fs20-funkschaltsystem.html),
 [MAX!](http://www.elv.de/max-imale-kontrolle.html), temperature sensors, weather stations and more.
 See the [full list of supported Devices](http://culfw.de/culfw.html#Features).
@@ -69,6 +69,8 @@ cul.on('data', function (raw) {
     has to be enabled for usage with [SCC](http://busware.de/tiki-index.php?page=SCC)), changes default baudrate to 38400 and default serialport to /dev/ttyAMA0
 * **rssi** (default: ```true```)  
     receive rssi (signal strength) value with every message (works only if init and parse are both true)
+* **debug** (default: ```false```)  
+    log every command which is send in the console
 * **host** (no default value)  
     the IP-Address of CUNO (has to be set when using telnet mode)
 * **port** (default: ```2323```)  
