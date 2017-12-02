@@ -10,8 +10,6 @@
 const util = require('util');
 const EventEmitter = require('events').EventEmitter;
 
-const SerialPort = require('serialport');
-
 const protocol = {
     em: require('./lib/em.js'),
     fs20: require('./lib/fs20.js'),
@@ -42,11 +40,17 @@ const commands = {
 
 const modes = {
     slowrf: {},
-    moritz: {start: 'Zr', stop: 'Zx'},
-    asksin: {start: 'Ar', stop: 'Ax'}
+    moritz: {
+        start: 'Zr',
+        stop: 'Zx'
+    },
+    asksin: {
+        start: 'Ar',
+        stop: 'Ax'
+    }
 };
 
-const Cul = function (options) {
+const Cul = function(options) {
     const that = this;
 
     options.initCmd = 0x01;
@@ -56,6 +60,9 @@ const Cul = function (options) {
     options.coc = options.coc || false;
     options.scc = options.scc || false;
     options.rssi = options.rssi || true;
+    options.debug = options.debug || false;
+    options.connectionMode = options.connectionMode || 'serial';
+    options.networkTimeout = options.networkTimeout ||  true;
 
     if (options.coc) {
         options.baudrate = options.baudrate || 38400;
@@ -81,67 +88,164 @@ const Cul = function (options) {
         stopCmd = modes[options.mode.toLowerCase()].stop;
     }
 
-    const spOptions = {
-        baudrate: options.baudrate,
-        parser: SerialPort.parsers.readline('\r\n')
-    };
-    const serialPort = new SerialPort(options.serialport, spOptions);
+    // serial connection
+    if (options.connectionMode == 'serial') {
 
-    this.close = function (callback) {
-        if (options.init && stopCmd) {
-            that.write(stopCmd, () => {
+        const SerialPort = require('serialport');
+
+        const spOptions = {
+            baudrate: options.baudrate,
+            parser: SerialPort.parsers.readline('\r\n')
+        };
+        const serialPort = new SerialPort(options.serialport, spOptions);
+
+        this.close = function(callback) {
+            if (options.init && stopCmd) {
+                that.write(stopCmd, () => {
+                    serialPort.close(callback);
+                });
+            } else {
                 serialPort.close(callback);
-            });
-        } else {
-            serialPort.close(callback);
-        }
-    };
+            }
+        };
 
-    serialPort.on('close', () => {
-        that.emit('close');
-    });
+        serialPort.on('close', () => {
+            that.emit('close');
+        });
 
-    serialPort.on('open', () => {
-        if (options.init) {
-            that.write(options.initCmd, err => {
-                if (err) {
-                    throw err;
-                }
-            });
-            serialPort.drain(() => {
-                if (modeCmd) {
-                    that.write(modeCmd, err => {
-                        if (err) {
-                            throw err;
-                        }
-                    });
-                    serialPort.drain(err => {
-                        if (err) {
-                            throw err;
-                        }
+        serialPort.on('open', () => {
+            if (options.init) {
+                that.write(options.initCmd, err => {
+                    if (err) {
+                        throw err;
+                    }
+                });
+                serialPort.drain(() => {
+                    if (modeCmd) {
+                        that.write(modeCmd, err => {
+                            if (err) {
+                                throw err;
+                            }
+                        });
+                        serialPort.drain(err => {
+                            if (err) {
+                                throw err;
+                            }
+                            ready();
+                        });
+                    } else {
                         ready();
-                    });
-                } else {
-                    ready();
+                    }
+                });
+            } else {
+                ready();
+            }
+
+            function ready() {
+                serialPort.on('data', parse);
+                that.emit('ready');
+            }
+        });
+
+        this.write = function(data, callback) {
+            if (options.debug) console.log('->', data);
+            serialPort.write(data + '\r\n');
+            serialPort.drain(callback);
+        };
+
+    }
+
+    // telnet connection
+    else if (options.connectionMode == 'telnet') {
+        const net = require('net');
+
+        if (!options.host) {
+            throw "no host defined !";
+        }
+
+        options.port = options.port ||  '2323';
+
+        const telnet = net.createConnection(parseInt(options.port), options.host);
+
+        if (options.networkTimeout) {
+
+            // WATCHDOG
+            this.telnetWatchdog = Date.now(); // setup watchdog
+            this.telnetWatchdogSecondTry = false; // we try to times before the watchdog bites
+            setInterval(() => {
+                if (Date.now() - that.telnetWatchdog > 5000) { // watchdog bites
+                    if (!that.telnetWatchdogSecondTry) { // first time
+
+                        // if its the first time we are writing a
+                        // simple command to the server and wait for an answer
+                        that.telnetWatchdogSecondTry = true;
+                        that.telnetWatchdog = Date.now();
+                        that.write('V');
+                    } else { // second time
+
+                        // the answer to the command we have written has not arrived
+                        // so we throw an error
+                        throw "Connection Timeout !";
+                    }
                 }
+            }, 2500);
+
+            this.patWatchdog = function() {
+                that.telnetWatchdog = Date.now(); // save new time
+                that.telnetWatchdogSecondTry = false;
+            }
+
+        }
+
+
+        telnet.on('connect', function() {
+            console.log('Connected');
+
+            if (options.init) {
+                that.write(options.initCmd);
+
+                if (modeCmd) {
+                    that.write(modeCmd);
+                }
+            }
+
+            telnet.on('data', (data) => {
+                parse(data.toString().replace(/[\n\r]/g, ''));
+                that.patWatchdog(); // pat Watchdog
             });
-        } else {
-            ready();
-        }
 
-        function ready() {
-            serialPort.on('data', parse);
             that.emit('ready');
-        }
-    });
+        });
 
-    this.write = function (data, callback) {
-        // Console.log('->', data)
-        serialPort.write(data + '\r\n');
-        serialPort.drain(callback);
-    };
+        telnet.on('close', function() {
+            console.log('Disconnected');
+            that.emit('close');
+        });
 
-    this.cmd = function () {
+        telnet.on('error', function(ex) {
+            console.log("handled error");
+            console.log(ex);
+            process.exit();
+        });
+
+        this.write = function(data, callback) {
+            if (options.debug) console.log('->', data);
+            telnet.write(data + '\r\n');
+
+            if (callback)
+                callback(false);
+        };
+
+    }
+
+    // if an unknown connection is defined
+    else {
+        console.log("connection mode '" + options.connectionMode + "' is unknown !");
+        console.log("please use 'serial' or 'telnet'");
+        process.exit();
+    }
+
+    this.cmd = function() {
         let args = Array.prototype.slice.call(arguments);
         let callback;
         if (typeof args[args.length - 1] === 'function') {
