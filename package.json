@@ -30,7 +30,7 @@
   },
   "main": "./cul.js",
   "dependencies": {
-    "serialport": "^4.0.1"
+    "serialport": "^6.0.4"
   },
   "bugs": {
     "url": "https://github.com/hobbyquaker/cul/issues"
