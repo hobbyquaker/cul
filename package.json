@@ -1,11 +1,11 @@
 {
-  "version": "0.5.0",
+  "version": "0.6.0",
   "name": "cul",
   "description": "Module to interact with Busware CUL / culfw",
   "homepage": "http://github.com/hobbyquaker/cul",
   "author": "hobbyquaker <hq@ccu.io>",
   "engines": {
-    "node": ">=6.0.0"
+    "node": ">=4.5.0"
   },
   "engineStrict": true,
   "keywords": [

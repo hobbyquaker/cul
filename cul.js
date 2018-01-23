@@ -1,9 +1,11 @@
+'use strict';
+
 /**
  *      CUL/COC / culfw Node.js module
  *      https://github.com/hobbyquaker/cul
  *
  *      Licensed under GPL v2
- *      Copyright (c) 2014 hobbyquaker <hq@ccu.io>
+ *      Copyright (c) 2014-2018 hobbyquaker <hq@ccu.io>
  *
  */
 
@@ -47,7 +49,7 @@ const modes = {
 
 const Cul = function (options) {
     const that = this;
-
+    options = options || {};
     options.initCmd = 0x01;
     options.mode = options.mode || 'SlowRF';
     options.init = options.init || true;
@@ -80,6 +82,7 @@ const Cul = function (options) {
         stopCmd = modes[options.mode.toLowerCase()].stop;
     }
 
+    const Readline = SerialPort.parsers.Readline;
     const spOptions = {
         baudRate: options.baudrate,
         parser: SerialPort.parsers.readline('\r\n')
