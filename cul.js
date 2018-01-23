@@ -84,10 +84,10 @@ const Cul = function (options) {
 
     const Readline = SerialPort.parsers.Readline;
     const spOptions = {
-        baudRate: options.baudrate,
-        parser: new Readline({delimiter: '\r\n'})
+        baudRate: options.baudrate
     };
     const serialPort = new SerialPort(options.serialport, spOptions);
+    const parser = serialPort.pipe(new Readline({delimiter: '\r\n'}));
 
     this.close = function (callback) {
         if (options.init && stopCmd) {
@@ -132,7 +132,7 @@ const Cul = function (options) {
         }
 
         function ready() {
-            serialPort.on('data', parse);
+            parser.on('data', parse);
             that.emit('ready');
         }
     });
