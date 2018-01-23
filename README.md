@@ -6,22 +6,22 @@
 [![XO code style](https://img.shields.io/badge/code_style-XO-5ed9c7.svg)](https://github.com/sindresorhus/xo)
 [![License][gpl-badge]][gpl-url]
 
-This is a [Node.js](http://nodejs.org) module that can be used to interact with a 
-[Busware CUL (USB)](http://busware.de/tiki-index.php?page=CUL), 
-[COC (RaspberryPi)](http://busware.de/tiki-index.php?page=COC) or 
-[SCC (RaspberryPi)](http://busware.de/tiki-index.php?page=SCC) running [culfw](http://culfw.de). With CUL/COC/SCC and 
+This is a [Node.js](http://nodejs.org) module that can be used to interact with a
+[Busware CUL (USB)](http://busware.de/tiki-index.php?page=CUL),
+[COC (RaspberryPi)](http://busware.de/tiki-index.php?page=COC),
+[SCC (RaspberryPi)](http://busware.de/tiki-index.php?page=SCC) or [CUNO](http://busware.de/tiki-index.php?page=CUNO) running [culfw](http://culfw.de). With CUL/COC/SCC/CUNO and
 culfw many RF devices can be controlled, like [FS20](http://www.elv.de/fs20-funkschaltsystem.html),
 [MAX!](http://www.elv.de/max-imale-kontrolle.html), temperature sensors, weather stations and more.
 See the [full list of supported Devices](http://culfw.de/culfw.html#Features).
 
 #### Purpose
 
-This module provides a thin abstraction for the serial port communication with CUL/COC/SCC and lightweight parse and 
+This module provides a thin abstraction for the serial port or telnet communication with CUL/COC/SCC/CUNO/CUNO2 and lightweight parse and
 command wrappers. It's intended to be used in different Node.js based Home Automation software.
 
 #### Credits
 
-based on the work of Rudolf Koenig, Author of [culfw](http://culfw.de) and [fhem](http://fhem.de) (both licensed under 
+based on the work of Rudolf Koenig, Author of [culfw](http://culfw.de) and [fhem](http://fhem.de) (both licensed under
 GPLv2)
 
 
@@ -48,6 +48,10 @@ cul.on('data', function (raw) {
 
 ## Options
 
+* **connectionMode** (default: ```"serial"```)
+    possible values:
+    * ```serial``` (CUL/COC/SCC)
+    * ```telnet``` (CUNO/CUNO2)    
 * **serialport** (default: ```"/dev/ttyAMA0"```)
 * **baudrate** (default: ```9600```)
 * **mode** (default: ```"SlowRF"```)    
@@ -63,8 +67,16 @@ cul.on('data', function (raw) {
     has to be enabled for usage with [COC](http://busware.de/tiki-index.php?page=COC)), changes default baudrate to 38400 and default serialport to /dev/ttyACM0
 * **scc** (default: ```false```)    
     has to be enabled for usage with [SCC](http://busware.de/tiki-index.php?page=SCC)), changes default baudrate to 38400 and default serialport to /dev/ttyAMA0
-* **rssi** (default: ```true```)
+* **rssi** (default: ```true```)  
     receive rssi (signal strength) value with every message (works only if init and parse are both true)
+* **debug** (default: ```false```)  
+    log every command which is send in the console
+* **host** (no default value)  
+    the IP-Address of CUNO (has to be set when using telnet mode)
+* **port** (default: ```2323```)  
+    the port of the telnet server
+* **networkTimeout** (default: ```true```)  
+    enabling sending keep alive signals to the telnet server
 
 pass options when creating a new cul object:
 ```javascript
@@ -81,7 +93,7 @@ var max = new Cul({
 
 ## Methods
 
-    
+
 * **close( )**    
 close the serialport connection
 * **write(raw, callback)**    
@@ -102,7 +114,7 @@ called when serialport connection is closed
 called for every received message
   * **raw** string, contains the raw message received from cul
   * **obj** object, contains parsed message data (see "data parsing" below)
-   
+
 ## Sending commands
 
 ### Raw commands
@@ -113,7 +125,7 @@ cul.write('F6C480111'); // Raw command
 ```
 ### Predefined commands
 
-(until now only FS20 is implemented)
+(until now only FS20 and FHT is implemented)
 
 #### FS20
 
@@ -172,7 +184,7 @@ F6C480011E5, {
         response: false,
         cmdRaw: '11',
         cmd: 'on'
-        
+
     }
 }
 ```
@@ -204,7 +216,7 @@ K1145525828, {
 V 1.66 CSM868 { data: { culfw: { version: '1.66', hardware: 'CSM868' } },
   protocol: 'MORITZ',
   rssi: -22 }
-Z0C000442113AD30C4F0D001CB41D { data: 
+Z0C000442113AD30C4F0D001CB41D { data:
    { len: 12,
      msgcnt: 0,
      msgFlag: '04',
@@ -220,7 +232,7 @@ Z0C000442113AD30C4F0D001CB41D { data:
   address: '113ad3',
   device: 'WallMountedThermostat',
   rssi: -59.5 }
-Z0E0002020C4F0D113AD3000119001C1E { data: 
+Z0E0002020C4F0D113AD3000119001C1E { data:
    { len: 14,
      msgcnt: 0,
      msgFlag: '02',
@@ -234,7 +246,7 @@ Z0E0002020C4F0D113AD3000119001C1E { data:
   protocol: 'MORITZ',
   address: '0c4f0d',
   rssi: -59 }
-  Z0B4F06300E3F3C1234560012F7 { data: 
+  Z0B4F06300E3F3C1234560012F7 { data:
    { len: 11,
      msgcnt: 79,
      msgFlag: '06',
@@ -255,6 +267,27 @@ Z0E0002020C4F0D113AD3000119001C1E { data:
   rssi: -78.5 }
 ```
 
+#### FHT
+```
+T4C5300AA00E3 { protocol: 'FHT',
+  address: '4c53',
+  data:
+   { cmdRaw: '00',
+     addressCode: 7683,
+     cmd: 'actuator',
+     valueRaw: '00' },
+  rssi: -88.5 }
+T4D3F286924E2 { protocol: 'FHT',
+  address: '4d3f',
+  data:
+   { cmdRaw: '28',
+     addressCode: 7763,
+     cmd: 'sat-from1',
+     valueRaw: '24',
+     value: '6:00' },
+  rssi: -89 }
+```
+
 Until now for these devices data parsing and/or a command wrapper is implemented:
 
 | protocol 	|         device        	| should work 	| tested 	|
@@ -269,6 +302,7 @@ Until now for these devices data parsing and/or a command wrapper is implemented
 | MORITZ   	| ShutterContact            | :white_check_mark: | :white_check_mark:   |
 | MORITZ   	| PushButton                | :white_check_mark: |                      |
 | Uniroll  	| All Devices               | :white_check_mark: |                      |
+| FHT  	    | FHT80b                  | :white_check_mark:   | :white_check_mark:   |
 
 More can be added easily: take a look at the files in the directory lib/ and find your inspiration on
 https://svn.fhem.de/fhem/trunk/fhem/FHEM/
@@ -287,15 +321,12 @@ Pull requests welcome!
 * more data parser modules
   * MORITZ (MAX!) (inprogress)
   * ESA
-  * FHT
   * HMS: HMS100WD, RM100-2, HMS100TFK, HMS100MG, HMS100CO, HMS100FIT
   * ...
 * more command modules
   * MORITZ (inprogress)
-  * FHT
   * ...
 * more tests
-* [CUNO](http://busware.de/tiki-index.php?page=CUNO) support
 
 Pull requests welcome! :smile:
 

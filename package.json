@@ -1,5 +1,5 @@
 {
-  "version": "0.6.3",
+  "version": "0.7.0",
   "name": "cul",
   "description": "Module to interact with Busware CUL / culfw",
   "homepage": "http://github.com/hobbyquaker/cul",
@@ -22,12 +22,14 @@
   "contributors": [
     "Michel Verbraak https://github.com/1stsetup",
     "Bluefox https://github.com/GermanBluefox",
-    "ns130291 https://github.com/ns130291"
+    "ns130291 https://github.com/ns130291",
+    "timroemisch https://github.com/timroemisch"
   ],
   "repository": "https://github.com/hobbyquaker/cul",
   "main": "./cul.js",
   "dependencies": {
-    "serialport": "^6.0.4"
+    "serialport": "^6.0.4",
+    "telnet-client": "^0.15.5"
   },
   "bugs": {
     "url": "https://github.com/hobbyquaker/cul/issues"
@@ -45,7 +47,8 @@
   "xo": {
     "space": 4,
     "ignore": [
-      "lib/moritz.js"
+      "lib/moritz.js",
+      "lib/fht.js"
     ]
   }
 }
