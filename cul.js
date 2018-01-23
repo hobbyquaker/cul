@@ -1,9 +1,11 @@
+'use strict';
+
 /**
  *      CUL/COC / culfw Node.js module
  *      https://github.com/hobbyquaker/cul
  *
  *      Licensed under GPL v2
- *      Copyright (c) 2014 hobbyquaker <hq@ccu.io>
+ *      Copyright (c) 2014-2018 hobbyquaker <hq@ccu.io>
  *
  */
 

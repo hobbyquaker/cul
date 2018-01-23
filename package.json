@@ -5,7 +5,7 @@
   "homepage": "http://github.com/hobbyquaker/cul",
   "author": "hobbyquaker <hq@ccu.io>",
   "engines": {
-    "node": ">=6.0.0"
+    "node": ">=4.5.0"
   },
   "engineStrict": true,
   "keywords": [
