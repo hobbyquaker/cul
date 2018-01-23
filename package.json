@@ -24,10 +24,7 @@
     "Bluefox https://github.com/GermanBluefox",
     "ns130291 https://github.com/ns130291"
   ],
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/hobbyquaker/cul.git"
-  },
+  "repository": "https://github.com/hobbyquaker/cul",
   "main": "./cul.js",
   "dependencies": {
     "serialport": "^6.0.4"
@@ -36,14 +33,14 @@
     "url": "https://github.com/hobbyquaker/cul/issues"
   },
   "scripts": {
-    "test": "xo && mocha tests/*"
+    "test": "camo-purge; xo && mocha tests/*"
   },
   "license": "GPL-2.0",
   "devDependencies": {
     "camo-purge": "latest",
-    "xo": "latest",
     "mocha": "latest",
-    "should": "latest"
+    "should": "latest",
+    "xo": "latest"
   },
   "xo": {
     "space": 4,
