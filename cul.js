@@ -47,7 +47,7 @@ const modes = {
 
 const Cul = function (options) {
     const that = this;
-
+    options = options || {};
     options.initCmd = 0x01;
     options.mode = options.mode || 'SlowRF';
     options.init = options.init || true;
