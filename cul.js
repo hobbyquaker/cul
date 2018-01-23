@@ -80,9 +80,10 @@ const Cul = function (options) {
         stopCmd = modes[options.mode.toLowerCase()].stop;
     }
 
+    const Readline = SerialPort.parsers.Readline;
     const spOptions = {
         baudrate: options.baudrate,
-        parser: SerialPort.parsers.readline('\r\n')
+        parser: new Readline({delimiter: '\r\n'})
     };
     const serialPort = new SerialPort(options.serialport, spOptions);
 
