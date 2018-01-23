@@ -85,7 +85,7 @@ const Cul = function (options) {
     const Readline = SerialPort.parsers.Readline;
     const spOptions = {
         baudRate: options.baudrate,
-        parser: SerialPort.parsers.readline('\r\n')
+        parser: new Readline({delimiter: '\r\n'})
     };
     const serialPort = new SerialPort(options.serialport, spOptions);
 
