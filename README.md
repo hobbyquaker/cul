@@ -302,7 +302,7 @@ Until now for these devices data parsing and/or a command wrapper is implemented
 | MORITZ   	| ShutterContact            | :white_check_mark: | :white_check_mark:   |
 | MORITZ   	| PushButton                | :white_check_mark: |                      |
 | Uniroll  	| All Devices               | :white_check_mark: |                      |
-| FHT  	    | FHT80b                  | :white_check_mark:   | :white_check_mark:   |
+| FHT  	    | FHT80b                    | :white_check_mark: | :white_check_mark:   |
 
 More can be added easily: take a look at the files in the directory lib/ and find your inspiration on
 https://svn.fhem.de/fhem/trunk/fhem/FHEM/
