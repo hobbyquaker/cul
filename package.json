@@ -3,7 +3,7 @@
   "name": "cul",
   "description": "Module to interact with Busware CUL / culfw",
   "homepage": "http://github.com/hobbyquaker/cul",
-  "author": "hobbyquaker <hq@ccu.io>",
+  "author": "hobbyquaker <hobbyquaker@gmail.com>",
   "engines": {
     "node": ">=4.5.0"
   },
