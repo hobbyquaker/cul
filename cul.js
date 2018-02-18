@@ -65,6 +65,7 @@ const Cul = function (options) {
     options.debug = options.debug || false;
     options.connectionMode = options.connectionMode || 'serial';
     options.networkTimeout = options.networkTimeout || true;
+    options.logger = options.logger || console.log;
 
     if (options.coc) {
         options.baudrate = options.baudrate || 38400;
@@ -150,7 +151,7 @@ const Cul = function (options) {
 
         this.write = function (data, callback) {
             if (options.debug) {
-                console.log('->', data);
+                options.logger('->', data);
             }
             serialPort.write(data + '\r\n');
             serialPort.drain(callback);
@@ -194,7 +195,7 @@ const Cul = function (options) {
         }
 
         telnet.on('connect', () => {
-            console.log('Connected');
+            options.logger('Connected');
 
             if (options.init) {
                 that.write(options.initCmd);
@@ -213,7 +214,7 @@ const Cul = function (options) {
         });
 
         telnet.on('close', () => {
-            console.log('Disconnected');
+            options.logger('Disconnected');
             that.emit('close');
         });
 
@@ -223,7 +224,7 @@ const Cul = function (options) {
 
         this.write = function (data, callback) {
             if (options.debug) {
-                console.log('->', data);
+                options.logger('->', data);
             }
             telnet.write(data + '\r\n');
 
