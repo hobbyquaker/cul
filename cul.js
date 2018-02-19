@@ -1,3 +1,6 @@
+/*jshint strict:true */
+/*jslint node: true */
+/*jslint esversion: 6 */
 'use strict';
 
 /**
@@ -123,7 +126,7 @@ const Cul = function (options) {
                     }
                 });
                 serialPort.drain(() => {
-                    setTimeout(function() { // give CUL enough time to wakeup
+                    setTimeout(() => { // give CUL enough time to wakeup
                         that.write(options.initCmd, err => {
                             if (err) {
                                 throw err;
