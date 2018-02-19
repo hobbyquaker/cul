@@ -117,27 +117,36 @@ const Cul = function (options) {
 
         serialPort.on('open', () => {
             if (options.init) {
-                that.write(options.initCmd, err => {
+                that.write('V', err => {
                     if (err) {
                         throw err;
                     }
                 });
                 serialPort.drain(() => {
-                    if (modeCmd) {
-                        that.write(modeCmd, err => {
+                    setTimeout(function() { // give CUL enough time to wakeup
+                        that.write(options.initCmd, err => {
                             if (err) {
                                 throw err;
                             }
                         });
-                        serialPort.drain(err => {
-                            if (err) {
-                                throw err;
+                        serialPort.drain(() => {
+                            if (modeCmd) {
+                                that.write(modeCmd, err => {
+                                    if (err) {
+                                        throw err;
+                                    }
+                                });
+                                serialPort.drain(err => {
+                                    if (err) {
+                                        throw err;
+                                    }
+                                    ready();
+                                });
+                            } else {
+                                ready();
                             }
-                            ready();
                         });
-                    } else {
-                        ready();
-                    }
+                    }, 1000);
                 });
             } else {
                 ready();
