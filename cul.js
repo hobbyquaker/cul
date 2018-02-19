@@ -1,6 +1,6 @@
-/*jshint strict:true */
-/*jslint node: true */
-/*jslint esversion: 6 */
+/* jshint strict:true */
+/* jslint node: true */
+/* jslint esversion: 6 */
 'use strict';
 
 /**
@@ -16,13 +16,13 @@ const util = require('util');
 const EventEmitter = require('events').EventEmitter;
 
 const protocol = {
-    em: require(__dirname + '/lib/em.js'),
-    fs20: require(__dirname + '/lib/fs20.js'),
-    hms: require(__dirname + '/lib/hms.js'),
-    moritz: require(__dirname + '/lib/moritz.js'),
-    uniroll: require(__dirname + '/lib/uniroll.js'),
-    ws: require(__dirname + '/lib/ws.js'),
-    fht: require(__dirname + '/lib/fht.js')
+    em: require('./lib/em.js'),
+    fs20: require('./lib/fs20.js'),
+    hms: require('./lib/hms.js'),
+    moritz: require('./lib/moritz.js'),
+    uniroll: require('./lib/uniroll.js'),
+    ws: require('./lib/ws.js'),
+    fht: require('./lib/fht.js')
 };
 
 // http://culfw.de/commandref.html
