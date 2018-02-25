@@ -44,7 +44,9 @@ const commands = {
 };
 
 const modes = {
-    slowrf: {},
+    slowrf: {
+        start: 'T01'
+    },
     moritz: {
         start: 'Zr',
         stop: 'Zx'
