@@ -122,37 +122,39 @@ const Cul = function (options) {
 
         serialPort.on('open', () => {
             if (options.init) {
-                that.write('V', err => {
-                    if (err) {
-                        throw err;
-                    }
-                });
-                serialPort.drain(() => {
-                    setTimeout(() => { // give CUL enough time to wakeup
-                        that.write(options.initCmd, err => {
-                            if (err) {
-                                throw err;
-                            }
-                        });
-                        serialPort.drain(() => {
-                            if (modeCmd) {
-                                that.write(modeCmd, err => {
-                                    if (err) {
-                                        throw err;
-                                    }
-                                });
-                                serialPort.drain(err => {
-                                    if (err) {
-                                        throw err;
-                                    }
+                setTimeout(() => { // give CUL enough time to wakeup
+                    that.write('V', err => {
+                        if (err) {
+                            throw err;
+                        }
+                    });
+                    serialPort.drain(() => {
+                        setTimeout(() => { // give CUL enough time to wakeup
+                            that.write(options.initCmd, err => {
+                                if (err) {
+                                    throw err;
+                                }
+                            });
+                            serialPort.drain(() => {
+                                if (modeCmd) {
+                                    that.write(modeCmd, err => {
+                                        if (err) {
+                                            throw err;
+                                        }
+                                    });
+                                    serialPort.drain(err => {
+                                        if (err) {
+                                            throw err;
+                                        }
+                                        ready();
+                                    });
+                                } else {
                                     ready();
-                                });
-                            } else {
-                                ready();
-                            }
-                        });
-                    }, 1000);
-                });
+                                }
+                            });
+                        }, 2000);
+                    });
+                }, 2000);
             } else {
                 ready();
             }
