@@ -22,7 +22,8 @@ const protocol = {
     moritz: require('./lib/moritz.js'),
     uniroll: require('./lib/uniroll.js'),
     ws: require('./lib/ws.js'),
-    fht: require('./lib/fht.js')
+    fht: require('./lib/fht.js'),
+    esa: require('./lib/esa.js')
 };
 
 // http://culfw.de/commandref.html
@@ -45,7 +46,6 @@ const commands = {
 
 const modes = {
     slowrf: {
-        start: 'T01'
     },
     moritz: {
         start: 'Zr',
@@ -122,13 +122,13 @@ const Cul = function (options) {
 
         serialPort.on('open', () => {
             if (options.init) {
-                setTimeout(() => { // give CUL enough time to wakeup
+                /*setTimeout(() => { // give CUL enough time to wakeup
                     that.write('V', err => {
                         if (err) {
                             throw err;
                         }
                     });
-                    serialPort.drain(() => {
+                    serialPort.drain(() => {*/
                         setTimeout(() => { // give CUL enough time to wakeup
                             that.write(options.initCmd, err => {
                                 if (err) {
@@ -152,9 +152,9 @@ const Cul = function (options) {
                                     ready();
                                 }
                             });
-                        }, 2000);
-                    });
-                }, 2000);
+                        }, 1500);
+/*                    });
+}, 2000);*/
             } else {
                 ready();
             }
