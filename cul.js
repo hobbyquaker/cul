@@ -100,12 +100,14 @@ const Cul = function (options) {
     if (options.connectionMode === 'serial') {
         const SerialPort = require('serialport');
         const Readline = SerialPort.parsers.Readline;
+        const parser = new Readline({
+            delimiter: '\r\n'
+        });
         const spOptions = {
             baudRate: options.baudrate,
-            parser: new Readline({delimiter: '\r\n'})
         };
         const serialPort = new SerialPort(options.serialport, spOptions);
-
+        serialPort.pipe(parser);
         this.close = function (callback) {
             if (options.init && stopCmd) {
                 that.write(stopCmd, () => {
@@ -122,45 +124,36 @@ const Cul = function (options) {
 
         serialPort.on('open', () => {
             if (options.init) {
-                /*setTimeout(() => { // give CUL enough time to wakeup
-                    that.write('V', err => {
+                setTimeout(() => { // give CUL enough time to wakeup
+                    that.write(options.initCmd, err => {
                         if (err) {
                             throw err;
                         }
                     });
-                    serialPort.drain(() => {*/
-                        setTimeout(() => { // give CUL enough time to wakeup
-                            that.write(options.initCmd, err => {
+                    serialPort.drain(() => {
+                        if (modeCmd) {
+                            that.write(modeCmd, err => {
                                 if (err) {
                                     throw err;
                                 }
                             });
-                            serialPort.drain(() => {
-                                if (modeCmd) {
-                                    that.write(modeCmd, err => {
-                                        if (err) {
-                                            throw err;
-                                        }
-                                    });
-                                    serialPort.drain(err => {
-                                        if (err) {
-                                            throw err;
-                                        }
-                                        ready();
-                                    });
-                                } else {
-                                    ready();
+                            serialPort.drain(err => {
+                                if (err) {
+                                    throw err;
                                 }
+                                ready();
                             });
-                        }, 1500);
-/*                    });
-}, 2000);*/
+                        } else {
+                            ready();
+                        }
+                    });
+                }, 1500);
             } else {
                 ready();
             }
 
             function ready() {
-                serialPort.on('data', parse);
+                parser.on('data', parse);
                 that.emit('ready');
             }
         });
