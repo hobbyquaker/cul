@@ -1,5 +1,5 @@
 {
-  "version": "0.7.1",
+  "version": "0.8.0",
   "name": "cul",
   "description": "Module to interact with Busware CUL / culfw",
   "homepage": "http://github.com/hobbyquaker/cul",
@@ -24,7 +24,8 @@
     "Bluefox https://github.com/GermanBluefox",
     "ns130291 https://github.com/ns130291",
     "Tim Römisch https://github.com/timroemisch",
-    "Ingo Fischer https://github.com/Apollon77"
+    "Ingo Fischer https://github.com/Apollon77",
+    "Michael Lorenz"
   ],
   "repository": "https://github.com/hobbyquaker/cul",
   "main": "./cul.js",
