@@ -1,3 +1,6 @@
+/* jshint strict:true */
+/* jslint node: true */
+/* jslint esversion: 6 */
 'use strict';
 
 /**
@@ -19,7 +22,8 @@ const protocol = {
     moritz: require('./lib/moritz.js'),
     uniroll: require('./lib/uniroll.js'),
     ws: require('./lib/ws.js'),
-    fht: require('./lib/fht.js')
+    fht: require('./lib/fht.js'),
+    esa: require('./lib/esa.js')
 };
 
 // http://culfw.de/commandref.html
@@ -41,7 +45,8 @@ const commands = {
 };
 
 const modes = {
-    slowrf: {},
+    slowrf: {
+    },
     moritz: {
         start: 'Zr',
         stop: 'Zx'
@@ -65,6 +70,7 @@ const Cul = function (options) {
     options.debug = options.debug || false;
     options.connectionMode = options.connectionMode || 'serial';
     options.networkTimeout = options.networkTimeout || true;
+    options.logger = options.logger || console.log;
 
     if (options.coc) {
         options.baudrate = options.baudrate || 38400;
@@ -94,12 +100,14 @@ const Cul = function (options) {
     if (options.connectionMode === 'serial') {
         const SerialPort = require('serialport');
         const Readline = SerialPort.parsers.Readline;
+        const parser = new Readline({
+            delimiter: '\r\n'
+        });
         const spOptions = {
             baudRate: options.baudrate,
-            parser: new Readline({delimiter: '\r\n'})
         };
         const serialPort = new SerialPort(options.serialport, spOptions);
-
+        serialPort.pipe(parser);
         this.close = function (callback) {
             if (options.init && stopCmd) {
                 that.write(stopCmd, () => {
@@ -116,41 +124,43 @@ const Cul = function (options) {
 
         serialPort.on('open', () => {
             if (options.init) {
-                that.write(options.initCmd, err => {
-                    if (err) {
-                        throw err;
-                    }
-                });
-                serialPort.drain(() => {
-                    if (modeCmd) {
-                        that.write(modeCmd, err => {
-                            if (err) {
-                                throw err;
-                            }
-                        });
-                        serialPort.drain(err => {
-                            if (err) {
-                                throw err;
-                            }
+                setTimeout(() => { // give CUL enough time to wakeup
+                    that.write(options.initCmd, err => {
+                        if (err) {
+                            throw err;
+                        }
+                    });
+                    serialPort.drain(() => {
+                        if (modeCmd) {
+                            that.write(modeCmd, err => {
+                                if (err) {
+                                    throw err;
+                                }
+                            });
+                            serialPort.drain(err => {
+                                if (err) {
+                                    throw err;
+                                }
+                                ready();
+                            });
+                        } else {
                             ready();
-                        });
-                    } else {
-                        ready();
-                    }
-                });
+                        }
+                    });
+                }, 1500);
             } else {
                 ready();
             }
 
             function ready() {
-                serialPort.on('data', parse);
+                parser.on('data', parse);
                 that.emit('ready');
             }
         });
 
         this.write = function (data, callback) {
             if (options.debug) {
-                console.log('->', data);
+                options.logger('->', data);
             }
             serialPort.write(data + '\r\n');
             serialPort.drain(callback);
@@ -194,7 +204,7 @@ const Cul = function (options) {
         }
 
         telnet.on('connect', () => {
-            console.log('Connected');
+            options.logger('Connected');
 
             if (options.init) {
                 that.write(options.initCmd);
@@ -213,7 +223,7 @@ const Cul = function (options) {
         });
 
         telnet.on('close', () => {
-            console.log('Disconnected');
+            options.logger('Disconnected');
             that.emit('close');
         });
 
@@ -223,7 +233,7 @@ const Cul = function (options) {
 
         this.write = function (data, callback) {
             if (options.debug) {
-                console.log('->', data);
+                options.logger('->', data);
             }
             telnet.write(data + '\r\n');
 
