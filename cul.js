@@ -104,7 +104,7 @@ const Cul = function (options) {
             delimiter: '\r\n'
         });
         const spOptions = {
-            baudRate: options.baudrate,
+            baudRate: options.baudrate
         };
         const serialPort = new SerialPort(options.serialport, spOptions);
         serialPort.pipe(parser);
@@ -124,7 +124,7 @@ const Cul = function (options) {
 
         serialPort.on('open', () => {
             if (options.init) {
-                setTimeout(() => { // give CUL enough time to wakeup
+                setTimeout(() => { // Give CUL enough time to wakeup
                     that.write(options.initCmd, err => {
                         if (err) {
                             throw err;
