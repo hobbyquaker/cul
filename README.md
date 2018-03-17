@@ -71,6 +71,8 @@ cul.on('data', function (raw) {
     receive rssi (signal strength) value with every message (works only if init and parse are both true)
 * **debug** (default: ```false```)  
     log every command which is send in the console
+* **repeat** (default: ```false```)  
+    disable repeat message filtering in culfw, that means report each of the (repeated) packets of a message
 * **host** (no default value)  
     the IP-Address of CUNO (has to be set when using telnet mode)
 * **port** (default: ```2323```)  

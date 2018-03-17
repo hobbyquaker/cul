@@ -68,6 +68,7 @@ const Cul = function (options) {
     options.scc = options.scc || false;
     options.rssi = options.rssi || true;
     options.debug = options.debug || false;
+	options.repeat = options.repeat || false;
     options.connectionMode = options.connectionMode || 'serial';
     options.networkTimeout = options.networkTimeout || true;
     options.logger = options.logger || console.log;
@@ -86,6 +87,10 @@ const Cul = function (options) {
     if (options.rssi) {
         // Set flag, binary or
         options.initCmd |= 0x20;
+    }
+    if (options.repeat) {
+        // Set flag, binary or
+        options.initCmd |= 0x02;
     }
     options.initCmd = 'X' + ('0' + options.initCmd.toString(16)).slice(-2);
 
