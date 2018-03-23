@@ -26,7 +26,7 @@ describe('fs20.cmd', () => {
 
     it('(\'1112 1314\', \'1114\', \'on\') should return the command string \'F01230311\'', () => {
         const cmd = fs20.cmd('1112 1314', '1114', 'on');
-        cmd.should.equal('F01230317');
+        cmd.should.equal('F01230311');
     });
 
     it('(\'32324444\', \'1112\', \'off\') should return the command string \'F99FF0100\'', () => {
