@@ -52,6 +52,10 @@
     "ignore": [
       "lib/moritz.js",
       "lib/fht.js"
-    ]
+    ],
+    "rules": {
+      "prefer-destructuring": "warn",
+      "prefer-rest-params": "warn"
+    }
   }
 }
