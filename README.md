@@ -1,7 +1,7 @@
 # cul
 
 [![NPM version](https://badge.fury.io/js/cul.svg)](http://badge.fury.io/js/cul)
-[![Dependency Status](https://img.shields.io/gemnasium/hobbyquaker/cul.svg?maxAge=2592000)](https://gemnasium.com/github.com/hobbyquaker/cul)
+[![dependencies Status](https://david-dm.org/hobbyquaker/cul/status.svg)](https://david-dm.org/hobbyquaker/cul)
 [![Build Status](https://travis-ci.org/hobbyquaker/cul.svg?branch=master)](https://travis-ci.org/hobbyquaker/cul)
 [![XO code style](https://img.shields.io/badge/code_style-XO-5ed9c7.svg)](https://github.com/sindresorhus/xo)
 [![License][gpl-badge]][gpl-url]
