@@ -220,7 +220,7 @@ const Cul = function (options) {
             }
 
             telnet.on('data', data => {
-                parse(data.toString().replace(/[\n\r]/g, ''));
+                data.toString().split(/\r?\n/).forEach(parse);
                 that.patWatchdog(); // Pat Watchdog
             });
 
