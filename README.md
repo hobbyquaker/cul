@@ -346,7 +346,7 @@ Pull requests welcome! :smile:
 
 [Licensed under GPLv2](LICENSE)
 
-Copyright (c) 2014-2018 hobbyquaker <hobbyquaker@gmail.com>
+Copyright (c) 2014-2020 Sebastian Raff <hobbyquaker@gmail.com> and Contributors
 
 [gpl-badge]: https://img.shields.io/badge/License-GPL-blue.svg?style=flat
 [gpl-url]: LICENSE
