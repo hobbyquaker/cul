@@ -13,7 +13,7 @@
  */
 
 const util = require('util');
-const EventEmitter = require('events').EventEmitter;
+const {EventEmitter} = require('events');
 
 const protocol = {
     em: require('./lib/em.js'),
@@ -88,10 +88,12 @@ const Cul = function (options) {
         // Set flag, binary or
         options.initCmd |= 0x20;
     }
+
     if (options.repeat) {
         // Set flag, binary or
         options.initCmd |= 0x02;
     }
+
     options.initCmd = 'X' + ('0' + options.initCmd.toString(16)).slice(-2);
 
     const modeCmd = modes[options.mode.toLowerCase()] ? modes[options.mode.toLowerCase()].start : undefined;
@@ -104,7 +106,7 @@ const Cul = function (options) {
     // Serial connection
     if (options.connectionMode === 'serial') {
         const SerialPort = require('serialport');
-        const Readline = SerialPort.parsers.Readline;
+        const {Readline} = SerialPort.parsers;
         const parser = new Readline({
             delimiter: '\r\n'
         });
@@ -146,6 +148,7 @@ const Cul = function (options) {
                                 if (err) {
                                     throw err;
                                 }
+
                                 ready();
                             });
                         } else {
@@ -167,6 +170,7 @@ const Cul = function (options) {
             if (options.debug) {
                 options.logger('->', data);
             }
+
             serialPort.write(data + '\r\n');
             serialPort.drain(callback);
         };
@@ -240,6 +244,7 @@ const Cul = function (options) {
             if (options.debug) {
                 options.logger('->', data);
             }
+
             telnet.write(data + '\r\n');
 
             if (callback) {
@@ -271,14 +276,18 @@ const Cul = function (options) {
                 that.write(msg, callback);
                 return true;
             }
+
             if (typeof callback === 'function') {
                 callback('cmd ' + c + ' ' + JSON.stringify(args) + ' failed');
             }
+
             return false;
         }
+
         if (typeof callback === 'function') {
             callback('cmd ' + c + ' not implemented');
         }
+
         return false;
     };
 
@@ -286,6 +295,7 @@ const Cul = function (options) {
         if (!data) {
             return;
         }
+
         data = data.toString();
 
         let message;
@@ -302,11 +312,13 @@ const Cul = function (options) {
                     message = protocol[p].parse(data);
                 }
             }
+
             if (options.rssi) {
                 rssi = parseInt(data.slice(-2), 16);
                 message.rssi = (rssi >= 128 ? (((rssi - 256) / 2) - 74) : ((rssi / 2) - 74));
             }
         }
+
         that.emit('data', data, message);
     }
 
