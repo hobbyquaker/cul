@@ -26,7 +26,9 @@
     "Tim Römisch https://github.com/timroemisch",
     "Ingo Fischer https://github.com/Apollon77",
     "Michael Lorenz",
-    "mreschka https://github.com/mreschka"
+    "mreschka https://github.com/mreschka",
+    "Andre Klärner https://github.com/klaernie",
+    "Ferdinand Helmer https://github.com/ferdinandhelmer"
   ],
   "repository": "https://github.com/hobbyquaker/cul",
   "main": "./cul.js",
