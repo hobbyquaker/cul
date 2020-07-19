@@ -34,7 +34,7 @@
   "main": "./cul.js",
   "dependencies": {
     "serialport": "^9.0.0",
-    "telnet-client": "^1.0.0"
+    "telnet-client": "^1.4.5"
   },
   "bugs": {
     "url": "https://github.com/hobbyquaker/cul/issues"
