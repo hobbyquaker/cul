@@ -33,7 +33,7 @@
   "repository": "https://github.com/hobbyquaker/cul",
   "main": "./cul.js",
   "dependencies": {
-    "serialport": "^8.0.3",
+    "serialport": "^9.0.0",
     "telnet-client": "^1.4.1"
   },
   "bugs": {
