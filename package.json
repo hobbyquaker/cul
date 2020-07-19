@@ -40,7 +40,8 @@
     "url": "https://github.com/hobbyquaker/cul/issues"
   },
   "scripts": {
-    "test": "camo-purge; xo && mocha tests/*"
+    "test": "camo-purge; xo && mocha tests/*",
+    "lintfix": "xo --fix"
   },
   "license": "GPL-2.0",
   "devDependencies": {
@@ -58,7 +59,9 @@
     "rules": {
       "prefer-destructuring": "warn",
       "prefer-rest-params": "warn",
-      "unicorn/prefer-string-slice": "warn"
+      "unicorn/prefer-string-slice": "warn",
+      "unicorn/prevent-abbreviations": "warn",
+      "unicorn/no-fn-reference-in-iterator": "warn"
     }
   }
 }
