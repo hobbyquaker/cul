@@ -51,16 +51,16 @@ describe('fs20.cmd', () => {
 
 describe('fs20.parse', () => {
     it('(\'F99FF0100\') should return have several mandatory properties', () => {
-        const obj = fs20.parse('F99FF0100');
-        obj.should.have.property('protocol', 'FS20');
-        obj.should.have.property('address', '99FF01');
+        const object = fs20.parse('F99FF0100');
+        object.should.have.property('protocol', 'FS20');
+        object.should.have.property('address', '99FF01');
     });
 
     it('(\'F99FF0100\') should have several data properties', () => {
-        const obj = fs20.parse('F99FF0100');
+        const object = fs20.parse('F99FF0100');
 
-        obj.should.have.property('data');
-        obj.data.should.have.properties({
+        object.should.have.property('data');
+        object.data.should.have.properties({
             addressCode: '99FF',
             addressCodeElv: '3232 4444',
             addressDevice: '01',

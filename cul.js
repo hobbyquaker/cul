@@ -184,7 +184,7 @@ const Cul = function (options) {
 
         options.port = options.port || '2323';
 
-        const telnet = net.createConnection(parseInt(options.port, 10), options.host);
+        const telnet = net.createConnection(Number.parseInt(options.port, 10), options.host);
 
         if (options.networkTimeout) {
             // WATCHDOG
@@ -271,9 +271,9 @@ const Cul = function (options) {
         }
 
         if (protocol[c] && typeof protocol[c].cmd === 'function') {
-            const msg = protocol[c].cmd.apply(null, args);
-            if (msg) {
-                that.write(msg, callback);
+            const message = protocol[c].cmd.apply(null, args);
+            if (message) {
+                that.write(message, callback);
                 return true;
             }
 
@@ -314,7 +314,7 @@ const Cul = function (options) {
             }
 
             if (options.rssi) {
-                rssi = parseInt(data.slice(-2), 16);
+                rssi = Number.parseInt(data.slice(-2), 16);
                 message.rssi = (rssi >= 128 ? (((rssi - 256) / 2) - 74) : ((rssi / 2) - 74));
             }
         }
