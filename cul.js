@@ -119,6 +119,7 @@ const Cul = function (options) {
             if (!serialPort.isOpen) {
                 return;
             }
+
             if (options.init && stopCmd) {
                 that.write(stopCmd, () => {
                     serialPort.close(callback);
