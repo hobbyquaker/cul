@@ -116,6 +116,10 @@ const Cul = function (options) {
         const serialPort = new SerialPort(options.serialport, spOptions);
         serialPort.pipe(parser);
         this.close = function (callback) {
+            if (!serialPort.isOpen) {
+                return;
+            }
+
             if (options.init && stopCmd) {
                 that.write(stopCmd, () => {
                     serialPort.close(callback);
@@ -164,6 +168,10 @@ const Cul = function (options) {
                 parser.on('data', parse);
                 that.emit('ready');
             }
+        });
+
+        serialPort.on('error', ex => {
+            that.emit('error', ex);
         });
 
         this.write = function (data, callback) {
@@ -237,7 +245,7 @@ const Cul = function (options) {
         });
 
         telnet.on('error', ex => {
-            throw ex;
+            that.emit('error', ex);
         });
 
         this.write = function (data, callback) {

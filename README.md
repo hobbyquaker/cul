@@ -116,6 +116,8 @@ called when serialport connection is closed
 called for every received message
   * **raw** string, contains the raw message received from cul
   * **obj** object, contains parsed message data (see "data parsing" below)
+* **error(exception)**    
+called when serialport or tcp connection is returning an error
 
 ## Sending commands
 
