@@ -138,22 +138,22 @@ const Cul = function (options) {
                 setTimeout(() => { // Give CUL enough time to wakeup
                     that.write(options.initCmd, err => {
                         if (err) {
-                            throw err;
+                            that.emit('error', err);
                         }
                     });
                     serialPort.drain(() => {
                         if (modeCmd) {
                             that.write(modeCmd, err => {
                                 if (err) {
-                                    throw err;
+                                    that.emit('error', err);
                                 }
                             });
                             serialPort.drain(err => {
                                 if (err) {
-                                    throw err;
+                                    that.emit('error', err);
+                                } else {
+                                    ready();
                                 }
-
-                                ready();
                             });
                         } else {
                             ready();
@@ -203,7 +203,7 @@ const Cul = function (options) {
                     if (that.telnetWatchdogSecondTry) { // Second time
                         // the answer to the command we have written has not arrived
                         // so we throw an error
-                        throw new Error('Connection Timeout!');
+                        that.emit('error', new Error('Connection Timeout!'));
                     } else { // First time
                         // if its the first time we are writing a
                         // simple command to the server and wait for an answer
