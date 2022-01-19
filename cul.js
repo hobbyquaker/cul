@@ -73,6 +73,8 @@ const Cul = function (options) {
     options.networkTimeout = options.networkTimeout || true;
     options.logger = options.logger || console.log;
 
+    that.getReport = 0;
+
     if (options.coc) {
         options.baudrate = options.baudrate || 38400;
         options.serialport = options.serialport || '/dev/ttyACM0';
@@ -179,6 +181,9 @@ const Cul = function (options) {
                 options.logger('->', data);
             }
 
+            if (data == "X")
+                that.getReport++;
+        
             serialPort.write(data + '\r\n');
             serialPort.drain(callback);
         };
@@ -319,6 +324,23 @@ const Cul = function (options) {
                 if (protocol[p] && typeof protocol[p].parse === 'function') {
                     message = protocol[p].parse(data);
                 }
+            }
+            else {
+                if (that.getReport > 0) {
+                    let reportData = Number.parseInt(data.substr(0,2), 16);
+                    message.report = {
+                        knownMessages: (reportData & 0x01) == 0x01,
+                        eachPacket: (reportData & 0x02) == 0x02,
+                        detailedData: (reportData & 0x04) == 0x04,
+                        monitorMode: (reportData & 0x08) == 0x08,
+                        timing: (reportData & 0x10) == 0x10,
+                        rssi: (reportData & 0x20) == 0x20,
+                        FHTprotocolMessage: (reportData & 0x40) == 0x40,
+                        rawRssi: (reportData & 0x80) == 0x80
+                    }
+                    message.availableTime = Number.parseInt(data.substr(2).replace(" ",""));
+                    that.getReport--;
+                }    
             }
 
             if (options.rssi) {
