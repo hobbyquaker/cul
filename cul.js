@@ -179,6 +179,8 @@ const Cul = function (options) {
                 options.logger('->', data);
             }
 
+            that.getReport = (data == "X");
+        
             serialPort.write(data + '\r\n');
             serialPort.drain(callback);
         };
@@ -321,9 +323,25 @@ const Cul = function (options) {
                 }
             }
 
-            if (options.rssi) {
-                rssi = Number.parseInt(data.slice(-2), 16);
-                message.rssi = (rssi >= 128 ? (((rssi - 256) / 2) - 74) : ((rssi / 2) - 74));
+            if (that.getReport) {
+                let reportData = Number.parseInt(data.substr(0,2), 16);
+                message.report = {
+                    knownMessages: (reportData & 0x01) == 0x01,
+                    eachPacket: (reportData & 0x02) == 0x02,
+                    detailedData: (reportData & 0x04) == 0x04,
+                    monitorMode: (reportData & 0x08) == 0x08,
+                    timing: (reportData & 0x10) == 0x10,
+                    rssi: (reportData & 0x20) == 0x20,
+                    FHTprotocolMessage: (reportData & 0x40) == 0x40,
+                    rawRssi: (reportData & 0x80) == 0x80
+                }
+                message.availableTime = Number.parseInt(data.substr(2).replace(" ",""));
+            }
+            else {
+                if (options.rssi) {
+                    rssi = Number.parseInt(data.slice(-2), 16);
+                    message.rssi = (rssi >= 128 ? (((rssi - 256) / 2) - 74) : ((rssi / 2) - 74));
+                }
             }
         }
 
