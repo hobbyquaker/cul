@@ -159,7 +159,7 @@ const Cul = function (options) {
                             ready();
                         }
                     });
-                }, 1500);
+                }, 2000);
             } else {
                 ready();
             }
