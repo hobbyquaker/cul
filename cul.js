@@ -19,6 +19,7 @@ const protocol = {
     em: require('./lib/em.js'),
     fs20: require('./lib/fs20.js'),
     hms: require('./lib/hms.js'),
+    it: require('./lib/it.js'),
     moritz: require('./lib/moritz.js'),
     uniroll: require('./lib/uniroll.js'),
     ws: require('./lib/ws.js'),
@@ -41,6 +42,7 @@ const commands = {
     o: 'Obis',
     t: 'TX',
     U: 'Uniroll',
+    i: 'IT',
     K: 'WS'
 };
 
