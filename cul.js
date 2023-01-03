@@ -310,14 +310,21 @@ const Cul = function (options) {
         let command;
         let p;
         let rssi;
+        let dataRaw;
 
         if (options.parse) {
-            command = data[0];
+            if (options.rssi) {
+                dataRaw = data.slice(0,-2); // remove RSSI byte
+            } else {
+                dataRaw = data;
+            }
+
+            command = dataRaw[0];
             message = {};
             if (commands[command]) {
                 p = commands[command].toLowerCase();
                 if (protocol[p] && typeof protocol[p].parse === 'function') {
-                    message = protocol[p].parse(data);
+                    message = protocol[p].parse(dataRaw);
                 }
             }
 
