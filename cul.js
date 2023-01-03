@@ -19,6 +19,7 @@ const protocol = {
     em: require('./lib/em.js'),
     fs20: require('./lib/fs20.js'),
     hms: require('./lib/hms.js'),
+    it: require('./lib/it.js'),
     moritz: require('./lib/moritz.js'),
     uniroll: require('./lib/uniroll.js'),
     ws: require('./lib/ws.js'),
@@ -41,6 +42,7 @@ const commands = {
     o: 'Obis',
     t: 'TX',
     U: 'Uniroll',
+    i: 'IT',
     K: 'WS'
 };
 
@@ -159,7 +161,7 @@ const Cul = function (options) {
                             ready();
                         }
                     });
-                }, 1500);
+                }, 2000);
             } else {
                 ready();
             }
@@ -310,14 +312,21 @@ const Cul = function (options) {
         let command;
         let p;
         let rssi;
+        let dataRaw;
 
         if (options.parse) {
-            command = data[0];
+            if (options.rssi) {
+                dataRaw = data.slice(0,-2); // remove RSSI byte
+            } else {
+                dataRaw = data;
+            }
+
+            command = dataRaw[0];
             message = {};
             if (commands[command]) {
                 p = commands[command].toLowerCase();
                 if (protocol[p] && typeof protocol[p].parse === 'function') {
-                    message = protocol[p].parse(data);
+                    message = protocol[p].parse(dataRaw);
                 }
             }
 
