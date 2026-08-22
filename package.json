@@ -1,24 +1,38 @@
 {
-  "version": "0.17.0",
   "name": "cul",
-  "description": "Module to interact with Busware CUL / culfw",
-  "homepage": "http://github.com/hobbyquaker/cul",
-  "author": "hobbyquaker <hobbyquaker@gmail.com>",
+  "version": "0.18.0",
+  "description": "Module to interact with Busware CUL / COC / SCC / CUNO running culfw",
+  "main": "./cul.js",
+  "files": [
+    "cul.js",
+    "lib/"
+  ],
   "engines": {
-    "node": ">=8.0.0"
+    "node": ">=18"
   },
-  "engineStrict": true,
+  "scripts": {
+    "test": "node --test",
+    "test:watch": "node --test --watch",
+    "lint": "eslint . && prettier --check .",
+    "lintfix": "eslint --fix . && prettier --write ."
+  },
   "keywords": [
     "Smarthome",
     "Home Automation",
     "CUL",
+    "COC",
+    "SCC",
+    "CUNO",
     "FS20",
+    "FHT",
     "HomeMatic",
     "Max",
     "Busware",
     "culfw",
-    "fhem"
+    "fhem",
+    "868"
   ],
+  "author": "Sebastian Raff <hobbyquaker@gmail.com> (https://github.com/hobbyquaker)",
   "contributors": [
     "Michel Verbraak https://github.com/1stsetup",
     "Bluefox https://github.com/GermanBluefox",
@@ -30,38 +44,23 @@
     "Andre Klärner https://github.com/klaernie",
     "Ferdinand Helmer https://github.com/ferdinandhelmer"
   ],
-  "repository": "https://github.com/hobbyquaker/cul",
-  "main": "./cul.js",
-  "dependencies": {
-    "serialport": "^9.0.0",
-    "telnet-client": "^1.4.5"
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hobbyquaker/cul.git"
   },
   "bugs": {
     "url": "https://github.com/hobbyquaker/cul/issues"
   },
-  "scripts": {
-    "test": "camo-purge; xo && mocha tests/*",
-    "lintfix": "xo --fix"
-  },
+  "homepage": "https://github.com/hobbyquaker/cul",
   "license": "GPL-2.0",
-  "devDependencies": {
-    "camo-purge": "latest",
-    "mocha": "latest",
-    "should": "latest",
-    "xo": "latest"
+  "dependencies": {
+    "serialport": "^9.0.0"
   },
-  "xo": {
-    "space": 4,
-    "ignore": [
-      "lib/moritz.js",
-      "lib/fht.js"
-    ],
-    "rules": {
-      "prefer-destructuring": "warn",
-      "prefer-rest-params": "warn",
-      "unicorn/prefer-string-slice": "warn",
-      "unicorn/prevent-abbreviations": "warn",
-      "unicorn/no-fn-reference-in-iterator": "warn"
-    }
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.9.0",
+    "eslint-config-prettier": "^10.1.8",
+    "globals": "^17.11.0",
+    "prettier": "^3.9.6"
   }
 }

@@ -1,2 +1,4 @@
+node_modules/
+*.tgz
 .idea
-node_modules
+.DS_Store
