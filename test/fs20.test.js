@@ -1,8 +1,6 @@
-'use strict';
-
-const test = require('node:test');
-const assert = require('node:assert/strict');
-const fs20 = require('../lib/fs20.js');
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import * as fs20 from '../lib/fs20.js';
 
 test('fs20.cmd', async (t) => {
     await t.test('hex housecode, hex address, hex command', () => {

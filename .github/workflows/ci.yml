@@ -10,33 +10,29 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node: [18, 20, 22, 24]
+        node: [20, 22, 24]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
           cache: npm
-      # serialport 9 has no prebuilt binaries for current Node versions and would be compiled
-      # from source here. Nothing under test needs it - the parsers are plain JavaScript.
-      # Drop --ignore-scripts once we are on serialport 13 (see ROADMAP.md, 1.0.0).
-      - run: npm ci --ignore-scripts
+      - run: npm ci
       - run: npm run lint
       - run: npm test
 
   install:
-    # Informational: serialport 9 is built from source on modern Node, which needs a toolchain.
-    # Do not block CI on it, but keep the signal until 1.0.0 moves to serialport 13.
-    continue-on-error: true
-    runs-on: ubuntu-latest
+    # serialport 13 ships N-API prebuilds, so a plain install must work without a toolchain
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        node: [18, 24]
+        os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node }}
-      - run: npm install --omit=dev
-      - run: node -e "require('serialport')"
+          node-version: 22
+      - run: npm install --omit=dev --ignore-scripts=false
+      - run: node -e "import('serialport').then(m => console.log(typeof m.SerialPort))"
+      - run: node -e "import('./index.js').then(m => console.log(typeof m.default))"

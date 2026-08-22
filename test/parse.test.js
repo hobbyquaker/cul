@@ -1,8 +1,6 @@
-'use strict';
-
-const test = require('node:test');
-const assert = require('node:assert/strict');
-const {parseMessage, resolveProtocol} = require('../lib/parse.js');
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {parseMessage, resolveProtocol} from '../lib/parse.js';
 
 test('rssi handling', async (t) => {
     await t.test('decodes the trailing rssi byte', () => {
@@ -13,7 +11,7 @@ test('rssi handling', async (t) => {
     await t.test('does not invent an rssi for non rf messages', () => {
         const message = parseMessage('V 1.66 CSM868');
         assert.equal(message.rssi, undefined);
-        assert.equal(message.protocol, 'MORITZ');
+        assert.equal(message.protocol, 'culfw');
     });
 
     await t.test('does not strip anything when rssi reporting is off', () => {
@@ -86,18 +84,13 @@ test('MORITZ (MAX!)', async (t) => {
         const message = parseMessage('Z0B4F06300E3F3C1234560012F7');
         assert.equal(message.device, 'ShutterContact');
         assert.equal(message.data.error, undefined);
-        assert.equal(message.data.isopen, 1);
-        assert.equal(message.data.battery, 'ok');
+        assert.equal(message.data.open, true);
+        assert.equal(message.data.batteryLow, false);
+        assert.equal(message.data.batteryState, 'ok');
     });
 
     await t.test('a truncated message is reported, not decoded', () => {
         assert.equal(parseMessage('Z0C000442113AD30C4F0D00A5').data.error, 'len mismatch');
-    });
-
-    await t.test('the culfw version response', () => {
-        const message = parseMessage('V 1.66 CSM868');
-        assert.equal(message.data.culfw.version, '1.66');
-        assert.equal(message.data.culfw.hardware, 'CSM868');
     });
 
     await t.test('link partner messages do not throw', () => {
@@ -108,14 +101,27 @@ test('MORITZ (MAX!)', async (t) => {
         assert.equal(message.data.linkPartner.device, 'HeatingThermostat');
     });
 
-    await t.test('week profile hours are whole numbers', () => {
-        // github.com/hobbyquaker/cul/pull/34 - (time / 60) % 24 can be fractional
+    await t.test('week profile control points report start and end time', () => {
+        // github.com/hobbyquaker/cul/pull/34 - hour/minute is the start since 1.0.0, and it is
+        // a whole number (it used to be fractional, e.g. 11.333)
         const message = parseMessage('Z19000410113AD30C4F0D00022088208820882088208820882088A5');
         assert.equal(message.data.msgType, 'ConfigWeekProfile');
+        assert.equal(message.data.weekdayStr, 'Mon');
         assert.equal(message.data.controlpoints.length, 7);
-        for (const point of message.data.controlpoints) {
+
+        // the first control point starts at midnight
+        assert.deepEqual(message.data.controlpoints[0], {
+            temperature: 8,
+            hour: 0,
+            minute: 0,
+            untilHour: 11,
+            untilMinute: 20,
+        });
+
+        for (const point of message.data.controlpoints.slice(1)) {
             assert.equal(point.hour, 11, 'hour ' + point.hour + ' should be a whole number');
             assert.equal(point.minute, 20);
+            assert.equal(point.untilHour, 11);
         }
     });
 });
@@ -132,8 +138,14 @@ test('culfw responses', async (t) => {
         assert.equal(message.data.credit10ms, 900);
     });
 
+    await t.test('the firmware version response', () => {
+        const message = parseMessage('V 1.66 CSM868');
+        assert.equal(message.protocol, 'culfw');
+        assert.equal(message.data.version, '1.66');
+        assert.equal(message.data.hardware, 'CSM868');
+    });
+
     await t.test('does not swallow other responses', () => {
-        assert.equal(parseMessage('V 1.66 CSM868').protocol, 'MORITZ');
         assert.deepEqual(parseMessage('LOVF'), {});
         assert.deepEqual(parseMessage('21 900 extra'), {});
     });
@@ -145,21 +157,22 @@ test('FHT80 TF window sensor', async (t) => {
         assert.equal(message.protocol, 'FHTTK');
         assert.equal(message.device, 'FHT80TF');
         assert.equal(message.address, '123456');
-        assert.equal(message.data.window, false);
+        assert.equal(message.data.open, false);
         assert.equal(message.data.state, 'Window Closed');
         assert.equal(message.data.repetition, false);
-        assert.equal(message.data.battery, 0);
+        assert.equal(message.data.batteryLow, false);
     });
 
     await t.test('window open, retransmission', () => {
         const message = parseMessage('T12345681E5');
-        assert.equal(message.data.window, true);
+        assert.equal(message.data.open, true);
         assert.equal(message.data.repetition, true);
     });
 
     await t.test('low battery', () => {
         const message = parseMessage('T12345611E5');
-        assert.equal(message.data.window, true);
-        assert.equal(message.data.battery, 1);
+        assert.equal(message.data.open, true);
+        assert.equal(message.data.batteryLow, true);
+        assert.equal(message.data.batteryState, 'low');
     });
 });

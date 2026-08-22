@@ -1,11 +1,9 @@
-'use strict';
-
-const test = require('node:test');
-const assert = require('node:assert/strict');
-const tcm97001 = require('../lib/tcm97001.js');
-const revolt = require('../lib/revolt.js');
-const it = require('../lib/it.js');
-const {parseMessage} = require('../lib/parse.js');
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import * as tcm97001 from '../lib/tcm97001.js';
+import * as revolt from '../lib/revolt.js';
+import * as it from '../lib/it.js';
+import {parseMessage} from '../lib/parse.js';
 
 test('CUL_TCM97001 433 MHz sensors', async (t) => {
     await t.test('Mebus, identified by its checksum', () => {
@@ -24,7 +22,7 @@ test('CUL_TCM97001 433 MHz sensors', async (t) => {
         assert.equal(message.data.temperature, 21.5);
         assert.equal(message.data.humidity, 55);
         assert.equal(message.data.channel, 1);
-        assert.equal(message.data.battery, 1);
+        assert.equal(message.data.batteryLow, false);
     });
 
     await t.test('the checksum wins over the leading nibble', () => {

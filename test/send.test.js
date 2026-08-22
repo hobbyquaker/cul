@@ -1,12 +1,10 @@
-'use strict';
-
-const test = require('node:test');
-const assert = require('node:assert/strict');
-const it = require('../lib/it.js');
-const somfy = require('../lib/somfy.js');
-const hoermann = require('../lib/hoermann.js');
-const uniroll = require('../lib/uniroll.js');
-const {parseMessage} = require('../lib/parse.js');
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import * as it from '../lib/it.js';
+import * as somfy from '../lib/somfy.js';
+import * as hoermann from '../lib/hoermann.js';
+import * as uniroll from '../lib/uniroll.js';
+import {parseMessage} from '../lib/parse.js';
 
 test('Intertechno', async (t) => {
     await t.test('rotary switch position to house code', () => {

@@ -2,6 +2,58 @@
 
 All notable changes are documented here. This project follows [semantic versioning](https://semver.org).
 
+## 1.0.0
+
+The breaking release. Every change that alters output or requirements, collected into one version —
+see **[MIGRATION.md](MIGRATION.md)** for the complete before/after list.
+
+### Breaking
+
+- **ESM.** The package is `"type": "module"`, the entry point is `index.js` instead of `cul.js`.
+  `require('cul')` no longer works; use `import Cul from 'cul'` or a dynamic `import()`.
+- **serialport 13, Node `^20.19 || ^22.12 || >=24`.** serialport 9 only published prebuilds for Node
+  12/14/16, so on anything newer it was compiled from source against `nan` at install time — which
+  is what [#36](https://github.com/hobbyquaker/cul/issues/36) is about. serialport 13 is N-API based
+  and ships prebuilds, so installing needs no toolchain.
+- **`cmd()` rejects instead of returning `false`**, and `write()` / `cmd()` / `close()` return
+  promises. Node style callbacks still work.
+- **Message fields normalised** so a generic consumer needs no per-protocol special cases:
+  `battery` (which meant `0/1/2` in one protocol, `'ok'`/`'low'` in another, and had opposite
+  polarity in a third) is now `batteryLow` (boolean) plus `batteryState`; `WS` reports `address` as
+  a string with the FHEM 1..8 numbering; `FHTTK.window` and `MORITZ.isopen` are both `open`;
+  `valveposition`, `batterylow`, `dstsetting`, `langateway`, `rferror`, `unkbits` and `untilStr`
+  are camelCase.
+- **`V 1.66 CSM868` is a `culfw` message**, not a MORITZ one: `{protocol: 'culfw', data: {version,
+hardware}}`.
+- **MAX! week profile control points report their start time** as `hour`/`minute`, with the old
+  end time kept as `untilHour`/`untilMinute`
+  ([#34](https://github.com/hobbyquaker/cul/pull/34) by @1stsetup).
+- **An unknown `mode` or `connectionMode`, and telnet without a `host`, throw** instead of being
+  silently ignored.
+- `fht.cmd()` returns an array of messages; `moritz.cmd()` is gone (it always returned `false`).
+
+### Added
+
+- **Built-in reconnect** with a configurable delay (`reconnect`, default 10 s), plus a `connected`
+  property. Consumers no longer have to wrap `cul` in their own reconnect loop.
+- **`open()`** and the `autoOpen` option, so the connection can be opened explicitly.
+- **`AbortSignal` support** via the `signal` option.
+- **TypeScript typings** (`index.d.ts`) with a type-level test, and `parseMessage`,
+  `resolveProtocol`, `commands`, `protocol` and `rssiPattern` as named exports of the main entry.
+- **Transport tests** ([#15](https://github.com/hobbyquaker/cul/issues/15)): the telnet path against
+  a local server, the serial path against serialport's mock binding. They cover the init sequence,
+  reconnect, `close()`, chunked and split messages, and `cmd()` dispatch — the gap @Apollon77
+  described. CI also verifies that a plain `npm install` works on Linux, macOS and Windows.
+- FHT reports `data.confirmRaw`, decodes `actuator` as a percentage, and sets `batteryLow` from the
+  `warnings` value.
+
+### Fixed
+
+- `lib/fht.js` and `lib/moritz.js` were rewritten; they are no longer excluded from prettier and
+  eslint. Along the way: FHT could not encode a week program time with hour 0 or minute 0
+  (`time[0] > 0 && time[1] > 0`), single digit FHT device codes produced a malformed message, and
+  the modules no longer `console.log` from library code.
+
 ## 0.21.0
 
 Picks up what was still useful in the open pull requests. Additive.

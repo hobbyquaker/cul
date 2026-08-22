@@ -1,17 +1,31 @@
 {
   "name": "cul",
-  "version": "0.21.0",
+  "version": "1.0.0",
   "description": "Module to interact with Busware CUL / COC / SCC / CUNO running culfw",
-  "main": "./cul.js",
+  "type": "module",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "default": "./index.js"
+    },
+    "./lib/*.js": "./lib/*.js",
+    "./package.json": "./package.json"
+  },
   "files": [
-    "cul.js",
-    "lib/"
+    "index.js",
+    "index.d.ts",
+    "lib/",
+    "CHANGELOG.md",
+    "MIGRATION.md"
   ],
   "engines": {
-    "node": ">=18"
+    "node": "^20.19.0 || ^22.12.0 || >=24"
   },
   "scripts": {
-    "test": "node --test",
+    "test": "node --test && npm run test:types",
+    "test:types": "tsc -p types-test/tsconfig.json",
     "test:watch": "node --test --watch",
     "lint": "eslint . && prettier --check .",
     "lintfix": "eslint --fix . && prettier --write ."
@@ -30,7 +44,8 @@
     "Busware",
     "culfw",
     "fhem",
-    "868"
+    "868",
+    "433"
   ],
   "author": "Sebastian Raff <hobbyquaker@gmail.com> (https://github.com/hobbyquaker)",
   "contributors": [
@@ -42,7 +57,8 @@
     "Michael Lorenz",
     "mreschka https://github.com/mreschka",
     "Andre Klärner https://github.com/klaernie",
-    "Ferdinand Helmer https://github.com/ferdinandhelmer"
+    "Ferdinand Helmer https://github.com/ferdinandhelmer",
+    "jpk75 https://github.com/jpk75"
   ],
   "repository": {
     "type": "git",
@@ -54,13 +70,15 @@
   "homepage": "https://github.com/hobbyquaker/cul",
   "license": "GPL-2.0",
   "dependencies": {
-    "serialport": "^9.0.0"
+    "serialport": "^13.0.0"
   },
   "devDependencies": {
-    "@eslint/js": "^10.0.1",
-    "eslint": "^10.9.0",
-    "eslint-config-prettier": "^10.1.8",
-    "globals": "^17.11.0",
-    "prettier": "^3.9.6"
+    "@eslint/js": "^10.0.0",
+    "@types/node": "^24.0.0",
+    "eslint": "^10.0.0",
+    "eslint-config-prettier": "^10.0.0",
+    "globals": "^17.0.0",
+    "prettier": "^3.0.0",
+    "typescript": "^5.9.0"
   }
 }

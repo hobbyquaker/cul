@@ -1,11 +1,9 @@
-'use strict';
-
-const test = require('node:test');
-const assert = require('node:assert/strict');
-const {parseMessage} = require('../lib/parse.js');
-const ws = require('../lib/ws.js');
-const hms = require('../lib/hms.js');
-const tx = require('../lib/tx.js');
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {parseMessage} from '../lib/parse.js';
+import * as ws from '../lib/ws.js';
+import * as hms from '../lib/hms.js';
+import * as tx from '../lib/tx.js';
 
 test('WS / S300 family', async (t) => {
     await t.test('S300TH temperature and humidity', () => {
@@ -14,7 +12,7 @@ test('WS / S300 family', async (t) => {
         assert.equal(message.device, 'S300TH');
         assert.equal(message.data.temperature, 24.5);
         assert.equal(message.data.humidity, 58.5);
-        assert.equal(message.data.addressCode, 2);
+        assert.equal(message.address, '2');
     });
 
     await t.test('negative temperature', () => {
@@ -58,7 +56,7 @@ test('HMS family', async (t) => {
         assert.equal(message.address, '1234');
         assert.equal(message.device, 'HMS100T');
         assert.equal(message.data.temperature, 21.5);
-        assert.equal(message.data.battery, 0);
+        assert.equal(message.data.batteryLow, false);
         assert.equal(message.data.batteryState, 'ok');
         assert.equal(message.data.humidity, undefined);
     });
@@ -73,7 +71,7 @@ test('HMS family', async (t) => {
     await t.test('HMS100T low battery and negative temperature', () => {
         const message = hms.parse('H1234A1150200');
         assert.equal(message.data.temperature, -21.5);
-        assert.equal(message.data.battery, 1);
+        assert.equal(message.data.batteryLow, true);
         assert.equal(message.data.batteryState, 'empty');
     });
 

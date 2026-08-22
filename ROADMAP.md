@@ -76,41 +76,28 @@ Still open on the receive side, deliberately deferred:
 - Fixed the `AddLinkPartner` crash and the fractional week profile hour from
   [#34](https://github.com/hobbyquaker/cul/pull/34).
 
-## 1.0.0 — the breaking release
+## 1.0.0 — the breaking release (done)
 
-Everything that cannot be done without changing output or requirements. One release, one migration
-guide.
+Every change that alters output or requirements, in one version, with
+[MIGRATION.md](MIGRATION.md) as the before/after list.
 
-- [ ] **serialport 13** — this is the one users actually hit, see
-      [#36](https://github.com/hobbyquaker/cul/issues/36): with serialport 9 on Node >= 16 the
-      module loads but commands do not reach the device. Details in the entry further down.
-- [ ] **MAX! week profile control points should report start times, not end times**
-      ([#34](https://github.com/hobbyquaker/cul/pull/34) by @1stsetup). The fractional hour part of
-      that PR shipped in 0.21.0; the start/end change alters published values, so it waits for 1.0.0.
-- [ ] **ESM** (`"type": "module"`) with a named export, plus `index.d.ts` typings, matching what
-      [lgtv2](https://github.com/hobbyquaker/lgtv2) 2.0 did.
-- [ ] **serialport 13**, Node >= 20.19. serialport 9 has prebuilt binaries for Node 12/14/16 only,
-      so every install on a current Node compiles it from source with `nan` - which needs python3,
-      make and g++ on the target, i.e. exactly what a Raspberry Pi user does not want. serialport 13
-      is N-API based and ships prebuilds. This also drops the `--ignore-scripts` workaround in CI.
-- [ ] **Promise API** next to the callback API: `open()`, `close()`, `write()`, `cmd()` returning
-      promises, `AbortSignal` support.
-- [ ] **Built-in reconnect** with backoff for both serial and telnet, and `connected` state on the
-      instance. Every consumer currently reimplements this (cul2mqtt has its own wrapper); the
-      telnet watchdog only emits `error` and then leaves the object dead.
-- [ ] **Consistent `address`**: `WS` reports a number (`firstByte & 7`), everything else reports a
-      string; FHEM numbers the same sensors 1..8. 0.18.0 added `data.addressCode` with the FHEM
-      numbering - 1.0.0 makes `address` the string form of it and drops the old value.
-- [ ] **Consistent `data` field names** across protocols (`battery`/`batteryState`, `temperature`,
-      `humidity`, ...), so a generic consumer such as cul2mqtt does not need a per-protocol skip
-      list.
-- [ ] Rewrite `lib/fht.js` and `lib/moritz.js` (tabs, `var`, dead branches, a `payload(6,2)` call on
-      a string in the `AddLinkPartner` branch that throws). They are excluded from prettier and have
-      relaxed eslint rules today precisely because a reformat would hide the remaining bugs. Rewrite
-      with tests first, using recorded messages.
-- [ ] Drop the `V`-response-parsed-as-MORITZ oddity: `V 1.66 CSM868` should be
-      `{protocol: 'culfw', data: {version, hardware}}`, not a MORITZ message.
-- [ ] Validate `mode` against the known values instead of silently falling back to no mode command.
+- **serialport 13**, Node `^20.19 || ^22.12 || >=24`. Installing no longer compiles anything, which
+  is what [#36](https://github.com/hobbyquaker/cul/issues/36) needed. CI verifies a plain install on
+  Linux, macOS and Windows.
+- **ESM** with `index.d.ts` typings and a type-level test, matching
+  [lgtv2](https://github.com/hobbyquaker/lgtv2) 2.0.
+- **Promise API** (`open`, `close`, `write`, `cmd`) with the callback form kept, and `AbortSignal`
+  support.
+- **Built-in reconnect** plus a `connected` property, so consumers can drop their own wrappers.
+- **Normalised message fields**: `batteryLow` / `batteryState` everywhere, `WS` addresses as strings
+  with the FHEM numbering, `open` for both window contact protocols, camelCase throughout.
+- `V` is a `culfw` message instead of a MORITZ one; `mode` and `connectionMode` are validated.
+- MAX! week profile control points report start times
+  ([#34](https://github.com/hobbyquaker/cul/pull/34)).
+- `lib/fht.js` and `lib/moritz.js` rewritten; no module is excluded from prettier or eslint any
+  more.
+- **Transport tests** ([#15](https://github.com/hobbyquaker/cul/issues/15)) for both the telnet and
+  the serial path.
 
 ## 1.1.0 — MAX! and HomeMatic
 
@@ -146,13 +133,19 @@ This is the milestone most of the open issues are waiting for.
 
 ## Testing
 
-`npm test` covers the parsers and command builders, which is where the protocol bugs live. What is
-still missing ([#15](https://github.com/hobbyquaker/cul/issues/15), @Apollon77):
+`npm test` covers the parsers and command builders, both transports, and the typings
+(`tsc --noEmit` against `types-test/`).
 
-- [ ] Transport tests. The telnet path can be tested against a local `net` server; the serial path
-      needs serialport's mock binding, which means the instance has to expose its port or accept an
-      injected one. serialport 13 (1.0.0) makes that straightforward - `@serialport/binding-mock` is
-      a supported way to do it, unlike with serialport 9.
+The transport tests ([#15](https://github.com/hobbyquaker/cul/issues/15)) use a local `net` server
+for telnet and serialport's mock binding for serial — `SerialPortMock.binding`, which ships with
+serialport, so no extra dependency and nothing test-only in the public API. They cover the init
+sequence, the mode command, reconnect, `close()`, messages split across chunks and `cmd()` dispatch.
+
+Still open:
+
+- [ ] Recorded-traffic fixtures. Most protocol tests use hand-derived messages checked against the
+      FHEM sources; a capture from real hardware would be worth more, especially for MORITZ and the
+      CUL_TCM97001 models that no one here can verify.
 
 ## Not planned
 

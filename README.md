@@ -33,7 +33,8 @@ npm install cul
 ```
 
 ```javascript
-const Cul = require('cul');
+import Cul from 'cul';
+
 const cul = new Cul();
 
 // ready is emitted after the connection is established and culfw acknowledged data reporting
@@ -51,7 +52,27 @@ cul.on('error', (error) => {
 });
 ```
 
-Requires Node.js >= 18.
+Requires Node.js `^20.19 || ^22.12 || >=24`. The package is an ES module and ships TypeScript
+typings. Upgrading from 0.x? See **[MIGRATION.md](MIGRATION.md)**.
+
+`cul` reconnects on its own and the methods return promises, so a complete bridge is short:
+
+```javascript
+import Cul from 'cul';
+
+const cul = new Cul({serialport: '/dev/ttyACM0'});
+
+cul.on('ready', () => console.log('connected'));
+cul.on('close', () => console.log('disconnected, reconnecting'));
+cul.on('error', (error) => console.error(error.message));
+cul.on('data', (raw, message) => {
+  if (message.data?.temperature !== undefined) {
+    console.log(message.protocol, message.address, message.data.temperature, '°C');
+  }
+});
+
+await cul.cmd('FS20', '6C48', '01', 'on');
+```
 
 ## Options
 
@@ -72,43 +93,57 @@ Requires Node.js >= 18.
 | `port`           | `2323`         | telnet port                                                                                 |
 | `networkTimeout` | `true`         | send keep-alive commands to the telnet server                                               |
 | `initTimeout`    | `2000`         | ms the CUL gets to wake up before the init command is written                               |
+| `reconnect`      | `10000`        | reconnect delay in ms; `false` or `0` disables reconnecting                                 |
+| `autoOpen`       | `true`         | open the connection from the constructor; `false` means `open()` has to be called           |
+| `signal`         | -              | an `AbortSignal` that closes the connection                                                 |
 | `logger`         | `console.log`  | function used for the `debug` output                                                        |
 
-```javascript
-const Cul = require('cul');
+An unknown `mode` or `connectionMode`, and telnet without a `host`, throw from the constructor.
 
+```javascript
 const fs20 = new Cul({serialport: '/dev/ttyACM0', mode: 'SlowRF'});
 const max = new Cul({serialport: '/dev/ttyACM1', mode: 'MORITZ'});
 ```
 
 ## Methods
 
+All of these return a promise and also accept an optional node style callback.
+
+- **open()**
+  open the connection; resolves on `ready`. Only needed with `autoOpen: false`
 - **close([callback])**
-  close the connection
+  close the connection and stop reconnecting
 - **write(raw, [callback])**
-  send a message to the CUL. Writes directly to the serial port / socket; the optional callback is
-  passed through to the serialport module and called with `(err, res)`
+  send a message to the CUL, without the trailing CRLF
 - **cmd(protocol, arg1, arg2, ..., [callback])**
-  build a command and send it (see "Sending commands" below)
+  build a command and send it (see "Sending commands" below). Rejects when the protocol is unknown
+  or the arguments do not produce a valid message
 - **parse(raw)**
   parse a message and emit `data`. Normally called internally
 
-For parsing without a connection use `require('cul/lib/parse.js')`:
+`cul.connected` is `true` between `ready` and `close`.
+
+For parsing without a connection:
 
 ```javascript
-const {parseMessage} = require('cul/lib/parse.js');
+import {parseMessage} from 'cul';
 
 parseMessage('F6C480011E5');
 // { protocol: 'FS20', address: '6C4800', data: { ..., cmd: 'on' }, rssi: -87.5 }
 ```
 
+`commands`, `protocol`, `resolveProtocol` and `rssiPattern` are exported too, and the individual
+protocol modules stay importable as `cul/lib/fs20.js` and so on.
+
 ## Events
 
-- **ready** - connection established and (if `init` is true) data reporting enabled
+- **ready** - connection established and (if `init` is true) data reporting enabled. Fires again
+  after every successful reconnect
 - **close** - connection closed
 - **data(raw, message)** - a message was received. `raw` is the string from the CUL, `message` the
   parsed object (see "Data parsing")
-- **error(exception)** - the serial port or the TCP connection reported an error
+- **error(exception)** - the serial port or the TCP connection reported an error. `cul` keeps
+  reconnecting unless `reconnect` is disabled
 
 ## Sending commands
 
@@ -160,7 +195,7 @@ one the shutter saw. `cul` stays stateless - keep the counters yourself and incr
 helpers before each send.
 
 ```javascript
-const somfy = require('cul/lib/somfy.js');
+import * as somfy from 'cul/lib/somfy.js';
 
 rollingCode = somfy.nextRollingCode(rollingCode); // persist these two
 encKey = somfy.nextEncKey(encKey);
@@ -237,10 +272,10 @@ E020563037A01000200EC
 K1145525828
 {
     protocol: 'WS',
-    address: 1,
+    address: '2',
     device: 'S300TH',
     rssi: -54,
-    data: {addressCode: 2, temperature: 24.5, humidity: 58.5}
+    data: {temperature: 24.5, humidity: 58.5}
 }
 ```
 
@@ -253,7 +288,7 @@ T12345602E5
     address: '123456',
     device: 'FHT80TF',
     rssi: -54,
-    data: {stateRaw: '02', repetition: false, state: 'Window Closed', battery: 0, window: false}
+    data: {stateRaw: '02', repetition: false, state: 'Window Closed', batteryLow: false, open: false}
 }
 ```
 
@@ -314,9 +349,12 @@ T4C5300AA00E3
     protocol: 'FHT',
     address: '4c53',
     rssi: -88.5,
-    data: {cmdRaw: '00', addressCode: 7683, cmd: 'actuator', valueRaw: '00'}
+    data: {addressCode: 7683, cmdRaw: '00', cmd: 'actuator', confirmRaw: 'aa', valueRaw: '00', value: 0}
 }
 ```
+
+`value` is a number for temperatures and the valve position (as a percentage), and a string for the
+enums (`AUTO`/`MANU`, the `warnings` text) and for week program times (`06:00`).
 
 #### MORITZ (MAX!)
 
@@ -341,6 +379,13 @@ Z0C000442113AD30C4F0D001CB41D
         measuredTemperature: 18
     }
 }
+```
+
+#### culfw firmware version
+
+```
+V 1.66 CSM868
+{protocol: 'culfw', data: {version: '1.66', hardware: 'CSM868'}}
 ```
 
 ### Supported devices

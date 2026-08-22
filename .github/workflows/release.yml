@@ -27,7 +27,7 @@ jobs:
           cache: npm
       # trusted publishing (OIDC) needs npm >= 11.5.1; node 22 bundles npm 10
       - run: npm install -g npm@latest
-      - run: npm ci --ignore-scripts
+      - run: npm ci
       - run: npm run lint
       - run: npm test
       - run: npm publish --provenance --access public
