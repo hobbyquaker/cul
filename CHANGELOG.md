@@ -2,6 +2,29 @@
 
 All notable changes are documented here. This project follows [semantic versioning](https://semver.org).
 
+## 0.21.0
+
+Picks up what was still useful in the open pull requests. Additive.
+
+### Added
+
+- `initTimeout` option (default 2000 ms, was a hard coded 1500 ms). Some CULs need longer to wake up
+  before the init command is written. Thanks to @jpk75, [#35](https://github.com/hobbyquaker/cul/pull/35).
+- The answer to a bare `X` is parsed (`lib/culfw.js`): `{protocol: 'culfw', data: {reportRaw,
+report: {known, repeated, bits, monitor, bintime, rssi, fhtproto, lcdmon}, credit10ms}}`. The flag
+  names are culfw's own `REP_*` names, `credit10ms` is the remaining transmit credit that enforces
+  the 1 % duty cycle. Based on @1stsetup's [#33](https://github.com/hobbyquaker/cul/pull/33),
+  recognised by the shape of the response so it works in telnet mode too.
+
+### Fixed
+
+- **`AddLinkPartner` / `RemoveLinkPartner` threw** `data.payload is not a function` - the payload
+  was called instead of sliced, so pairing a MAX! device crashed the `data` handler. Same class of
+  bug as [#19](https://github.com/hobbyquaker/cul/issues/19), whose other two causes (the
+  `Object.prototype` pollution and the unguarded `PairPing` branch) were fixed in 0.18.0.
+- MAX! week profile control points reported fractional hours (`11.333` instead of `11`) because the
+  hour was not floored. Thanks to @1stsetup, [#34](https://github.com/hobbyquaker/cul/pull/34).
+
 ## 0.20.0
 
 The rest of the receive side. Additive: existing protocols are unchanged, but messages that used to

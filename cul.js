@@ -34,6 +34,9 @@ const defaultOptions = {
     debug: false,
     repeat: false,
     networkTimeout: true,
+    // Time the CUL gets to wake up before the init command is written. 1500 ms is not always
+    // enough, see https://github.com/hobbyquaker/cul/pull/35
+    initTimeout: 2000,
 };
 
 class Cul extends EventEmitter {
@@ -149,7 +152,7 @@ class Cul extends EventEmitter {
                             ready();
                         }
                     });
-                }, 1500);
+                }, options.initTimeout);
             } else {
                 ready();
             }

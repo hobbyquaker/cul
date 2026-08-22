@@ -99,6 +99,44 @@ test('MORITZ (MAX!)', async (t) => {
         assert.equal(message.data.culfw.version, '1.66');
         assert.equal(message.data.culfw.hardware, 'CSM868');
     });
+
+    await t.test('link partner messages do not throw', () => {
+        // github.com/hobbyquaker/cul/issues/19 - data.payload was called instead of sliced
+        const message = parseMessage('Z0E0004201234560000000011223301A5');
+        assert.equal(message.data.msgType, 'AddLinkPartner');
+        assert.equal(message.data.linkPartner.address, '112233');
+        assert.equal(message.data.linkPartner.device, 'HeatingThermostat');
+    });
+
+    await t.test('week profile hours are whole numbers', () => {
+        // github.com/hobbyquaker/cul/pull/34 - (time / 60) % 24 can be fractional
+        const message = parseMessage('Z19000410113AD30C4F0D00022088208820882088208820882088A5');
+        assert.equal(message.data.msgType, 'ConfigWeekProfile');
+        assert.equal(message.data.controlpoints.length, 7);
+        for (const point of message.data.controlpoints) {
+            assert.equal(point.hour, 11, 'hour ' + point.hour + ' should be a whole number');
+            assert.equal(point.minute, 20);
+        }
+    });
+});
+
+test('culfw responses', async (t) => {
+    await t.test('the answer to a bare X', () => {
+        const message = parseMessage('21   900');
+        assert.equal(message.protocol, 'culfw');
+        assert.equal(message.data.reportRaw, '21');
+        assert.equal(message.data.report.known, true);
+        assert.equal(message.data.report.rssi, true);
+        assert.equal(message.data.report.repeated, false);
+        assert.equal(message.data.report.lcdmon, false);
+        assert.equal(message.data.credit10ms, 900);
+    });
+
+    await t.test('does not swallow other responses', () => {
+        assert.equal(parseMessage('V 1.66 CSM868').protocol, 'MORITZ');
+        assert.deepEqual(parseMessage('LOVF'), {});
+        assert.deepEqual(parseMessage('21 900 extra'), {});
+    });
 });
 
 test('FHT80 TF window sensor', async (t) => {

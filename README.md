@@ -71,6 +71,7 @@ Requires Node.js >= 18.
 | `host`           | -              | IP address of the CUNO (required in telnet mode)                                            |
 | `port`           | `2323`         | telnet port                                                                                 |
 | `networkTimeout` | `true`         | send keep-alive commands to the telnet server                                               |
+| `initTimeout`    | `2000`         | ms the CUL gets to wake up before the init command is written                               |
 | `logger`         | `console.log`  | function used for the `debug` output                                                        |
 
 ```javascript
@@ -255,6 +256,24 @@ T12345602E5
     data: {stateRaw: '02', repetition: false, state: 'Window Closed', battery: 0, window: false}
 }
 ```
+
+#### culfw report (answer to a bare `X`)
+
+```
+21   900
+{
+    protocol: 'culfw',
+    data: {
+        reportRaw: '21',
+        report: {known: true, repeated: false, bits: false, monitor: false,
+                 bintime: false, rssi: true, fhtproto: false, lcdmon: false},
+        credit10ms: 900
+    }
+}
+```
+
+`credit10ms` is the transmit credit culfw has left, in units of 10 ms - it enforces the 1 % duty
+cycle of the 868 MHz band.
 
 #### 433 MHz sensor (CUL_TCM97001)
 

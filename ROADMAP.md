@@ -69,11 +69,24 @@ Still open on the receive side, deliberately deferred:
 - [ ] **HMS address ambiguity**: the HMS address changes on every battery change. Document the FHEM
       `100<type>` wildcard convention so consumers can keep a stable device id.
 
+## 0.21.0 — the useful parts of the open pull requests (done)
+
+- `initTimeout` option, from [#35](https://github.com/hobbyquaker/cul/pull/35).
+- `X` report parsing (`lib/culfw.js`), from [#33](https://github.com/hobbyquaker/cul/pull/33).
+- Fixed the `AddLinkPartner` crash and the fractional week profile hour from
+  [#34](https://github.com/hobbyquaker/cul/pull/34).
+
 ## 1.0.0 — the breaking release
 
 Everything that cannot be done without changing output or requirements. One release, one migration
 guide.
 
+- [ ] **serialport 13** — this is the one users actually hit, see
+      [#36](https://github.com/hobbyquaker/cul/issues/36): with serialport 9 on Node >= 16 the
+      module loads but commands do not reach the device. Details in the entry further down.
+- [ ] **MAX! week profile control points should report start times, not end times**
+      ([#34](https://github.com/hobbyquaker/cul/pull/34) by @1stsetup). The fractional hour part of
+      that PR shipped in 0.21.0; the start/end change alters published values, so it waits for 1.0.0.
 - [ ] **ESM** (`"type": "module"`) with a named export, plus `index.d.ts` typings, matching what
       [lgtv2](https://github.com/hobbyquaker/lgtv2) 2.0 did.
 - [ ] **serialport 13**, Node >= 20.19. serialport 9 has prebuilt binaries for Node 12/14/16 only,
@@ -101,8 +114,19 @@ guide.
 
 ## 1.1.0 — MAX! and HomeMatic
 
+This is the milestone most of the open issues are waiting for.
+
 - [ ] **MORITZ (MAX!) send support** - `lib/moritz.js` has a `cmd()` skeleton; wall thermostat /
-      radiator valve set-temperature, mode and pairing are what cul2mqtt is waiting for.
+      radiator valve set-temperature and mode are what cul2mqtt is waiting for.
+- [ ] **MAX! pairing** ([#18](https://github.com/hobbyquaker/cul/issues/18)). `PairPing` is parsed,
+      but nothing answers it. `14_CUL_MAX.pm` replies with `PairPong` and distinguishes a new pairing
+      from a re-pair by the destination address (`000000` = anyone, otherwise the last paired
+      device). Receiving works without pairing, which is why ShutterContacts appear to work today
+      and thermostats do not.
+- [ ] **MAX! associate / link partners** ([#31](https://github.com/hobbyquaker/cul/issues/31)):
+      `AddLinkPartner` / `RemoveLinkPartner` are parsed (and no longer crash since 0.21.0), but
+      there is no way to send them, so a wall thermostat cannot be associated with a radiator valve
+      the way FHEM does it.
 - [ ] MAX! device state tracking is currently a module-level `seen_devices` map shared by every
       `Cul` instance in the process. Move it onto the instance.
 - [ ] **AskSin / BidCoS (HomeMatic)**: `commands.A` is mapped but there is no parser. A full
@@ -113,6 +137,22 @@ guide.
       of a dedicated wmbus library, `cul` should just hand over the frame.
 - [ ] **RF native mode** (`Nr<mode>`, a-culfw): LaCrosse IT+, PCA301, EMT7110. Payload is
       `id, type/flags, temp*10+1000, humidity|battery`.
+- [ ] **Stacked CUNs / mapleCUN / MAX!Cube with a-culfw**
+      ([#28](https://github.com/hobbyquaker/cul/issues/28)). Several transceivers behind one serial
+      or telnet connection: commands are prefixed with `*` per stack level, and received messages
+      carry the same prefix (`STACKABLE_CC` in `00_CUL.pm`, matched as `^\*`). It needs a routing
+      layer above the parser - a `Cul` instance per stack level sharing one transport, or a
+      `stackLevel` on each message - and cannot be bolted onto `parse()` alone.
+
+## Testing
+
+`npm test` covers the parsers and command builders, which is where the protocol bugs live. What is
+still missing ([#15](https://github.com/hobbyquaker/cul/issues/15), @Apollon77):
+
+- [ ] Transport tests. The telnet path can be tested against a local `net` server; the serial path
+      needs serialport's mock binding, which means the instance has to expose its port or accept an
+      injected one. serialport 13 (1.0.0) makes that straightforward - `@serialport/binding-mock` is
+      a supported way to do it, unlike with serialport 9.
 
 ## Not planned
 
