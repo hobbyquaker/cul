@@ -25,26 +25,21 @@ No API changes. See [CHANGELOG.md](CHANGELOG.md) for the full list.
 - Fixed: FS20 command table off-by-one and flag masking, FS20 extended timer, EM1000 current,
   S300TH detection, boolean options that could not be switched off, `Object.prototype` pollution.
 
-## 0.19.0 — send support for the cheap 433 MHz world
+## 0.19.0 — send support for the cheap 433 MHz world (done)
 
-Additive only: new `cmd()` protocols, no changes to existing output.
+Additive only: new `cmd()` protocols, no changes to existing output. See
+[CHANGELOG.md](CHANGELOG.md).
 
-- [ ] **Intertechno** (`is`, [`10_IT.pm`](https://svn.fhem.de/trac/browser/trunk/fhem/FHEM/10_IT.pm)).
-      Tri-state V1 (`is<10 tri-state digits><on/off code>`), V3 (26 bit address + group bit + 4 bit
-      unit, 16 dim levels) and EV1527. Also `it<µs>` (pulse width, default 420) and `isr<n>`
-      (repetitions). This is the single most requested missing feature - Intertechno sockets are
-      everywhere and receive-only support is useless for them.
-- [ ] **Somfy RTS** (`Ys`, [`10_SOMFY.pm`](https://svn.fhem.de/trac/browser/trunk/fhem/FHEM/10_SOMFY.pm)).
-      `Ys<KK><C><0><RRRR><AAAAAA>`: encryption key, command nibble (10 my, 11 stop, 20 up, 40 down,
-      80 prog, 90 wind+sun, A0 wind), rolling code, address. The rolling code and the encryption key
-      have to be persisted by the caller - `cul` should expose a helper that takes the current
-      counter and returns `{message, nextRollingCode, nextEncKey}` rather than keeping state itself.
-- [ ] **Hoermann** garage doors (`hn<10 hex>`, needs culfw >= 1.67,
-      [`18_CUL_HOERMANN.pm`](https://svn.fhem.de/trac/browser/trunk/fhem/FHEM/18_CUL_HOERMANN.pm)).
-      Receive is a bare `R` + 10 hex code with no checksum; send is a `toggle`.
-- [ ] **UNIRoll**: `lib/uniroll.js` has a `cmd()` but `parse()` returns `{}`. Decode
-      `U<gggg><d><c>` (group, device, b/d/e = down/stop/up).
-- [ ] Tests for every new `cmd()` against the byte sequences documented in the FHEM modules.
+- Intertechno (`lib/it.js`): V1 tri-state with the A..P / FLS 100 rotary switch tables, V3
+  pass-through, `it` clock and `isr` repetition.
+- Somfy RTS (`lib/somfy.js`): `Ys` send with stateless rolling code / encryption key helpers, `Yt` /
+  `Yr` settings, and receive.
+- Hoermann (`lib/hoermann.js`): `R` receive and `hn` send.
+- UNIRoll: validated `cmd()` and an echo `parse()`.
+
+Left out on purpose: Intertechno V3 is only a pass-through (building a V3 frame from an address,
+group bit and unit needs the dim-level encoding of 10_IT.pm), HomeEasy (`ish`/`ise`) and EV1527 are
+not implemented.
 
 ## 0.20.0 — the rest of the receive side
 
@@ -146,26 +141,26 @@ guide.
 
 ### Prefix coverage
 
-| Prefix    | Protocol                         | culfw      | status in `cul`                      |
-| --------- | -------------------------------- | ---------- | ------------------------------------ |
-| `F`       | FS20                             | stock      | parse + cmd                          |
-| `T` (10)  | FHT80b                           | stock      | parse + cmd                          |
-| `T` (8)   | FHT80 TF window sensor           | stock      | parse (0.18.0)                       |
-| `E`       | EM1000                           | stock      | parse                                |
-| `K`       | S300TH / KS300 / WS7000          | stock      | parse (KS300 + WS7000 in 0.18.0)     |
-| `H`       | HMS                              | stock      | parse (detectors in 0.18.0)          |
-| `S`       | ESA1000/2000                     | stock      | parse                                |
-| `t`       | LaCrosse TX2/TX3                 | stock      | parse (0.18.0)                       |
-| `U`       | UNIRoll                          | stock      | cmd only, parse in 0.19.0            |
-| `Z` / `V` | MORITZ (MAX!)                    | stock      | parse, cmd incomplete (1.1.0)        |
-| `R`       | Hoermann                         | stock      | none — 0.19.0                        |
-| `A`       | AskSin / BidCoS (HomeMatic)      | stock      | none — 1.1.0                         |
-| `o`       | OBIS smart meter                 | stock      | mapped but no parser — 0.20.0        |
-| `i`       | Intertechno                      | stock      | none — 0.19.0 (cmd) / 0.20.0 (parse) |
-| `s`       | CUL_TCM97001 (433 MHz sensors)   | Manchester | none — 0.20.0                        |
-| `r`       | Revolt NC-5462                   | a-culfw    | none — 0.20.0                        |
-| `Y`       | Somfy RTS                        | a-culfw    | none — 0.19.0                        |
-| `kr`      | Kopp Free Control                | a-culfw    | none — 0.20.0                        |
-| `b`       | Wireless M-Bus                   | stock      | none — 1.1.0                         |
-| `N`       | RF native (LaCrosse IT+, PCA301) | a-culfw    | none — 1.1.0                         |
-| `I`       | CUL_IR (CUNO)                    | CUNO       | none — 0.20.0                        |
+| Prefix    | Protocol                         | culfw      | status in `cul`                  |
+| --------- | -------------------------------- | ---------- | -------------------------------- |
+| `F`       | FS20                             | stock      | parse + cmd                      |
+| `T` (10)  | FHT80b                           | stock      | parse + cmd                      |
+| `T` (8)   | FHT80 TF window sensor           | stock      | parse (0.18.0)                   |
+| `E`       | EM1000                           | stock      | parse                            |
+| `K`       | S300TH / KS300 / WS7000          | stock      | parse (KS300 + WS7000 in 0.18.0) |
+| `H`       | HMS                              | stock      | parse (detectors in 0.18.0)      |
+| `S`       | ESA1000/2000                     | stock      | parse                            |
+| `t`       | LaCrosse TX2/TX3                 | stock      | parse (0.18.0)                   |
+| `U`       | UNIRoll                          | stock      | cmd + echo parse (0.19.0)        |
+| `Z` / `V` | MORITZ (MAX!)                    | stock      | parse, cmd incomplete (1.1.0)    |
+| `R`       | Hoermann                         | 1.67+      | parse + cmd (0.19.0)             |
+| `A`       | AskSin / BidCoS (HomeMatic)      | stock      | none — 1.1.0                     |
+| `o`       | OBIS smart meter                 | stock      | mapped but no parser — 0.20.0    |
+| `i`       | Intertechno                      | stock      | cmd (0.19.0), parse in 0.20.0    |
+| `s`       | CUL_TCM97001 (433 MHz sensors)   | Manchester | none — 0.20.0                    |
+| `r`       | Revolt NC-5462                   | a-culfw    | none — 0.20.0                    |
+| `Y`       | Somfy RTS                        | a-culfw    | parse + cmd (0.19.0)             |
+| `kr`      | Kopp Free Control                | a-culfw    | none — 0.20.0                    |
+| `b`       | Wireless M-Bus                   | stock      | none — 1.1.0                     |
+| `N`       | RF native (LaCrosse IT+, PCA301) | a-culfw    | none — 1.1.0                     |
+| `I`       | CUL_IR (CUNO)                    | CUNO       | none — 0.20.0                    |

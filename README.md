@@ -119,7 +119,7 @@ cul.write('F6C480111');
 
 ### Predefined commands
 
-Implemented for FS20, FHT and UNIRoll.
+Implemented for FS20, FHT, Intertechno, Somfy RTS, Hoermann and UNIRoll.
 
 #### FS20
 
@@ -135,6 +135,51 @@ appends the FS20 timer byte:
 
 ```javascript
 cul.cmd('FS20', '6C48', '01', 'on-for-timer', 30);
+```
+
+#### Intertechno
+
+`lib/it.js` exports `cmd(housecode, command)`. The house code is either 10 tri-state digits
+(`0`, `1`, `F`, `D`) or a rotary switch position - `A1` ... `P16` for Intertechno, `I1` ... `IV4`
+for FLS 100. `on`, `off`, `dimup` and `dimdown` use the codes FHEM defaults to; pass an explicit
+2 digit code for devices that differ.
+
+```javascript
+cul.cmd('it', 'A1', 'on'); // rotary switch house A, unit 1
+cul.cmd('it', 'FFFFFF0FFF', '0F'); // explicit house code and command code
+```
+
+`it.clock(us)` and `it.repetition(n)` build the `it` / `isr` settings commands, and a complete
+32 or 36 digit protocol V3 payload is passed through when `command` is omitted.
+
+#### Somfy RTS
+
+Somfy is a rolling code protocol: every frame carries a counter that has to be higher than the last
+one the shutter saw. `cul` stays stateless - keep the counters yourself and increment them with the
+helpers before each send.
+
+```javascript
+const somfy = require('cul/lib/somfy.js');
+
+rollingCode = somfy.nextRollingCode(rollingCode); // persist these two
+encKey = somfy.nextEncKey(encKey);
+cul.cmd('somfy', 'A29842', 'up', rollingCode, encKey);
+```
+
+Commands: `up`/`off`, `down`/`on`, `stop`, `go-my`, `prog`, `wind_sun`, `wind_only`, `blind`, or a
+2 digit hex code. `somfy.symbolWidth(us)` and `somfy.repetition(n)` build the `Yt` / `Yr` settings
+commands. Needs a firmware with Somfy support ([a-culfw](https://github.com/heliflieger/a-culfw)).
+
+#### Hoermann
+
+```javascript
+cul.cmd('hoermann', '0123456789'); // toggles the door, needs culfw >= 1.67
+```
+
+#### UNIRoll
+
+```javascript
+cul.cmd('uniroll', '1234', 0, 'up'); // group, device, up / down / stop
 ```
 
 ## Data parsing
@@ -266,12 +311,16 @@ Z0C000442113AD30C4F0D001CB41D
 | ESA      | ESA1000, ESA2000                                            | :white_check_mark: | :white_check_mark: |
 | MORITZ   | HeatingThermostat, WallMountedThermostat, PushButton        | :white_check_mark: |                    |
 | MORITZ   | ShutterContact                                              | :white_check_mark: | :white_check_mark: |
-| UNIRoll  | all devices (send only)                                     | :white_check_mark: |                    |
+| IT       | Intertechno V1 (send)                                       | :white_check_mark: |                    |
+| Somfy    | RTS shutters (send + receive)                               | :white_check_mark: |                    |
+| Hoermann | garage doors (send + receive)                               | :white_check_mark: |                    |
+| UNIRoll  | all devices (send)                                          | :white_check_mark: |                    |
 
-Everything not in this list - Intertechno, Somfy, Hoermann, Revolt, Kopp FC, the cheap 433 MHz
-sensor families, HomeMatic, wM-Bus - is on the [roadmap](ROADMAP.md). Adding a protocol means adding
-one file to `lib/`; the FHEM sources at <https://svn.fhem.de/fhem/trunk/fhem/FHEM/> are the
-reference implementation. Pull requests welcome.
+Everything not in this list - Revolt, Kopp FC, the cheap 433 MHz sensor families, HomeMatic, wM-Bus
+
+- is on the [roadmap](ROADMAP.md). Adding a protocol means adding
+  one file to `lib/`; the FHEM sources at <https://svn.fhem.de/fhem/trunk/fhem/FHEM/> are the
+  reference implementation. Pull requests welcome.
 
 ## Further reading
 

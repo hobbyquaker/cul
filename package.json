@@ -1,6 +1,6 @@
 {
   "name": "cul",
-  "version": "0.18.0",
+  "version": "0.19.0",
   "description": "Module to interact with Busware CUL / COC / SCC / CUNO running culfw",
   "main": "./cul.js",
   "files": [

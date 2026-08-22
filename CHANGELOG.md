@@ -2,6 +2,37 @@
 
 All notable changes are documented here. This project follows [semantic versioning](https://semver.org).
 
+## 0.19.0
+
+Send support for the 433 MHz world. Additive: no existing output changes.
+
+### Added
+
+- **Intertechno** (`lib/it.js`). `cmd(housecode, command)` builds the culfw `is` frame from a 10
+  digit tri-state house code, or straight from a rotary switch position (`A1` ... `P16`, and the
+  FLS 100 wheels `I1` ... `IV4`). `on`/`off`/`dimup`/`dimdown` resolve to the codes 10_IT.pm uses by
+  default; an explicit 2 digit code can be passed instead. A complete 32/36 digit protocol V3
+  payload is passed through. `clock()` and `repetition()` set the pulse width (`it`) and the frame
+  repeat count (`isr`). Also reachable as `cul.cmd('intertechno', ...)`.
+- **Somfy RTS** (`lib/somfy.js`). `cmd(address, command, rollingCode, encKey)` builds the `Ys`
+  frame; `nextRollingCode()` and `nextEncKey()` do the increments 10_SOMFY.pm does (the key is
+  masked with `0xAF`). The module stays stateless - Somfy is a rolling code protocol and the counter
+  belongs to whoever persists it. `symbolWidth()` and `repetition()` set `Yt` / `Yr`. Received `Ys`
+  frames are parsed, with the address bytes swapped back into the order `cmd()` takes.
+- **Hoermann** garage doors (`lib/hoermann.js`). `R` messages are decoded into an address plus a
+  `toggle` command, `cmd(address)` sends `hn<address>` (needs culfw >= 1.67). `R` messages used to
+  come back as an empty object.
+- **UNIRoll** `parse()` for the echo of a sent frame, and a `cmd()` that validates its arguments
+  and accepts both numbers and hex strings. An unknown command stops the shutter instead of
+  silently building a wrong message.
+
+### Notes
+
+- Somfy and Hoermann need a firmware built with those protocols - stock culfw 1.67+ or
+  [a-culfw](https://github.com/heliflieger/a-culfw). Intertechno is in stock culfw.
+- Somfy's control byte carries a checksum in its lower nibble, so `stop` and `go-my` cannot be told
+  apart on the receive side. `data.cmdRaw` holds the unmasked byte.
+
 ## 0.18.0
 
 Modernisation of the tooling plus a round of parser fixes. The public API (constructor options,
