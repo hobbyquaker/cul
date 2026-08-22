@@ -2,6 +2,47 @@
 
 All notable changes are documented here. This project follows [semantic versioning](https://semver.org).
 
+## 0.20.0
+
+The rest of the receive side. Additive: existing protocols are unchanged, but messages that used to
+come back as an empty object are parsed now.
+
+### Added
+
+- **CUL_TCM97001** (`lib/tcm97001.js`) - the cheap 433 MHz temperature and humidity sensors sold
+  under a dozen brands, received as `s` messages. Ten decoders, tried most specific first:
+  Mebus, GT_WT_02, Type1, KW9010, KW9015 (rain), Prologue, NC_WS (PEARL NC7159 / LogiLink WS0002),
+  Eurochron (EAS 800), Rubicson, AURIOL and ABS700. There is no protocol id on the air, so a model
+  is identified by message length plus a checksum where the protocol has one, and by a fixed nibble
+  where it does not. Implausible results (temperature outside -30 ... 60 °C, humidity outside
+  0 ... 100 %) make the decoder fall through to the next candidate instead of reporting a wrong
+  value. `data.error` says `no matching decoder` when nothing fits.
+- **Revolt NC-5462** power meter sockets (`lib/revolt.js`): voltage, current, frequency, power,
+  power factor and energy, with the plausibility check 19_Revolt.pm applies (`data.error` is set,
+  the values are still reported).
+- **Intertechno receive** (`i` messages): protocol V1 (tri-state house code plus command code, the
+  counterpart of `it.cmd()`), EV1527 sensors (PIR, door contacts - address `1527x<5 hex>`) and
+  protocol V3 (26 bit address, group bit, unit).
+- Messages with a prefix culfw uses but for which there is no parser yet (`A` AskSin, `o` Obis, ...)
+  are reported as `{protocol, unknown: true}` instead of an empty object, so a bridge can log what a
+  user's CUL actually receives. There is no `data` on them, so generic consumers stay quiet.
+
+### Fixed
+
+- **MORITZ (MAX!) messages failed their length check since 0.18.0.** The check counted the RSSI
+  byte, which is stripped before parsing now, so every `Z` message came back as
+  `data.error: 'len mismatch'` with nothing decoded. As a side effect `data.payload` no longer has
+  the RSSI byte appended to it - it used to be two characters too long (`1CB41D` instead of `1CB4`),
+  which is also what the old README example showed.
+
+### Notes
+
+- Lower case `s` is not in the prefix list `00_CUL.pm` strips the RSSI byte from, so for
+  CUL_TCM97001 the byte is part of the payload. That module decodes its own `rssi`; the length of a
+  message therefore counts 10 nibbles of data plus the RSSI byte.
+- Not implemented: Kopp Free Control (a-culfw only, needs the full key code table), CUL_IR, the
+  Ventus W044/W132/W174 wind and rain sensors, PFR-130, NX7674 and HomeEasy. See ROADMAP.md.
+
 ## 0.19.0
 
 Send support for the 433 MHz world. Additive: no existing output changes.

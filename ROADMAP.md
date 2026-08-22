@@ -37,40 +37,37 @@ Additive only: new `cmd()` protocols, no changes to existing output. See
 - Hoermann (`lib/hoermann.js`): `R` receive and `hn` send.
 - UNIRoll: validated `cmd()` and an echo `parse()`.
 
-Left out on purpose: Intertechno V3 is only a pass-through (building a V3 frame from an address,
-group bit and unit needs the dim-level encoding of 10_IT.pm), HomeEasy (`ish`/`ise`) and EV1527 are
-not implemented.
+Left out on purpose: Intertechno V3 send is only a pass-through (building a V3 frame from an address,
+group bit and unit needs the dim-level encoding of 10_IT.pm) and HomeEasy (`ish`/`ise`) is not
+implemented.
 
-## 0.20.0 — the rest of the receive side
+## 0.20.0 — the rest of the receive side (done)
 
-Additive: new `protocol` values appear in the `data` event.
+Additive: new `protocol` values appear in the `data` event, nothing existing changed. See
+[CHANGELOG.md](CHANGELOG.md).
 
-- [ ] **CUL_TCM97001** (`s` prefix,
-      [`14_CUL_TCM97001.pm`](https://svn.fhem.de/trac/browser/trunk/fhem/FHEM/14_CUL_TCM97001.pm)).
-      The single biggest coverage win: ~20 cheap 433 MHz temperature/humidity sensor families
-      (Prologue, NC_WS, Mebus, AURIOL, Rubicson, GT-WT-02, KW9010, Eurochron, TCM 218943, W044/W132/
-      W174 Ventus wind/rain, PFR-130 rain gauge, NX7674). Message length (8/10/12/14 hex) plus a
-      per-model checksum identifies the model. Port it as a table of `{length, detect, decode}`
-      entries so models can be added one at a time; without a model hint several of them are only
-      distinguishable by their CRC.
-- [ ] **Revolt NC-5462 power meters** (`r` prefix,
-      [`19_Revolt.pm`](https://svn.fhem.de/trac/browser/trunk/fhem/FHEM/19_Revolt.pm)). 23 hex
-      digits: voltage (byte 2), current (bytes 3-4, ×0.01 A), frequency (byte 5), power (bytes 6-7,
-      ×0.1 W), power factor (byte 8, ×0.01), energy (bytes 9-10, ×0.01 kWh). Plausibility limits:
-      V >= 80, f <= 65, P <= 3650, I <= 16.
-- [ ] **Intertechno / EV1527 receive** (`i` prefix) - the same tri-state decoding as the send path,
-      needed for remotes and PIR sensors.
+- CUL_TCM97001 (`lib/tcm97001.js`): ten decoders for the cheap 433 MHz sensor families, picked by
+  length + checksum + fixed nibbles, with a plausibility gate so a wrong guess falls through to the
+  next candidate.
+- Revolt NC-5462 (`lib/revolt.js`).
+- Intertechno receive: V1, EV1527 and V3.
+- `{protocol, unknown: true}` for prefixes culfw uses but `cul` has no parser for.
+
+Still open on the receive side, deliberately deferred:
+
 - [ ] **Kopp Free Control** (`kr` prefix,
-      [`10_KOPP_FC.pm`](https://svn.fhem.de/trac/browser/trunk/fhem/FHEM/10_KOPP_FC.pm)), receive
-      and send. Only supported by [a-culfw](https://github.com/heliflieger/a-culfw), not by stock
-      culfw.
-- [ ] **OBIS / smart meter** (`o` prefix, `47_OBIS.pm`) - `commands.o` is mapped to `Obis` but there
-      is no module behind it, so those messages come back empty today.
+      [`10_KOPP_FC.pm`](https://svn.fhem.de/trac/browser/trunk/fhem/FHEM/10_KOPP_FC.pm)). a-culfw
+      only, and the module is 900 lines that are mostly a key code table - it needs hardware to
+      verify, not more porting.
+- [ ] **Ventus W044 / W132 / W174** wind and rain sensors, **PFR-130** rain gauge and **NX7674**
+      inside CUL_TCM97001. They need bit-reversed nibbles and their own checksums; the decoder table
+      in `lib/tcm97001.js` takes them as three more entries whenever someone has one to test with.
 - [ ] **CUL_IR** (`I` prefix) for CUNO/CUNO2 infrared.
-- [ ] **HMS100T ambiguity**: the HMS address changes on every battery change. Document the FHEM
+- [ ] **OBIS / smart meter** (`o` prefix). `commands.o` maps to `Obis`, but `00_CUL.pm` routes `^o+`
+      to CUL_REDIRECT, not to `47_OBIS.pm` - the mapping needs checking against real hardware before
+      a parser is worth writing. Such messages are reported as `unknown` since 0.20.0.
+- [ ] **HMS address ambiguity**: the HMS address changes on every battery change. Document the FHEM
       `100<type>` wildcard convention so consumers can keep a stable device id.
-- [ ] Emit an `unknown` event (or `message.unknown = true`) for messages with a known prefix but no
-      parser, so downstream projects can log what a user's CUL actually sees.
 
 ## 1.0.0 — the breaking release
 
@@ -155,12 +152,12 @@ guide.
 | `Z` / `V` | MORITZ (MAX!)                    | stock      | parse, cmd incomplete (1.1.0)    |
 | `R`       | Hoermann                         | 1.67+      | parse + cmd (0.19.0)             |
 | `A`       | AskSin / BidCoS (HomeMatic)      | stock      | none — 1.1.0                     |
-| `o`       | OBIS smart meter                 | stock      | mapped but no parser — 0.20.0    |
-| `i`       | Intertechno                      | stock      | cmd (0.19.0), parse in 0.20.0    |
-| `s`       | CUL_TCM97001 (433 MHz sensors)   | Manchester | none — 0.20.0                    |
-| `r`       | Revolt NC-5462                   | a-culfw    | none — 0.20.0                    |
+| `o`       | OBIS smart meter                 | stock      | `unknown` — needs hardware       |
+| `i`       | Intertechno                      | stock      | parse + cmd (0.19.0 / 0.20.0)    |
+| `s`       | CUL_TCM97001 (433 MHz sensors)   | Manchester | parse (0.20.0)                   |
+| `r`       | Revolt NC-5462                   | a-culfw    | parse (0.20.0)                   |
 | `Y`       | Somfy RTS                        | a-culfw    | parse + cmd (0.19.0)             |
-| `kr`      | Kopp Free Control                | a-culfw    | none — 0.20.0                    |
+| `kr`      | Kopp Free Control                | a-culfw    | none — needs hardware            |
 | `b`       | Wireless M-Bus                   | stock      | none — 1.1.0                     |
 | `N`       | RF native (LaCrosse IT+, PCA301) | a-culfw    | none — 1.1.0                     |
-| `I`       | CUL_IR (CUNO)                    | CUNO       | none — 0.20.0                    |
+| `I`       | CUL_IR (CUNO)                    | CUNO       | none — deferred                  |

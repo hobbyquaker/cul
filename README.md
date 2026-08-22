@@ -256,6 +256,37 @@ T12345602E5
 }
 ```
 
+#### 433 MHz sensor (CUL_TCM97001)
+
+```
+s9F00D76E00A5
+{
+    protocol: 'TCM97001',
+    address: '159',
+    device: 'GT_WT_02',
+    rssi: -119.5,
+    data: {temperature: 21.5, humidity: 55, channel: 1, battery: 1, mode: 0}
+}
+```
+
+These sensors carry no protocol id, so the model is identified by message length, a checksum where
+the protocol has one, and a fixed nibble where it does not. Results outside -30 ... 60 °C or
+0 ... 100 % make `cul` try the next candidate rather than report a wrong value; when nothing fits,
+`data.error` is `no matching decoder`.
+
+#### Revolt NC-5462
+
+```
+rAB12E60064320898620141A5
+{
+    protocol: 'Revolt',
+    address: 'AB12',
+    device: 'NC-5462',
+    rssi: -119.5,
+    data: {voltage: 230, current: 1, frequency: 50, power: 220, powerFactor: 0.98, energy: 3.21}
+}
+```
+
 #### FHT80b
 
 ```
@@ -286,7 +317,7 @@ Z0C000442113AD30C4F0D001CB41D
         src: '113ad3',
         dst: '0c4f0d',
         groupid: 0,
-        payload: '1CB41D',
+        payload: '1CB4',
         desiredTemperature: 14,
         measuredTemperature: 18
     }
@@ -311,16 +342,19 @@ Z0C000442113AD30C4F0D001CB41D
 | ESA      | ESA1000, ESA2000                                            | :white_check_mark: | :white_check_mark: |
 | MORITZ   | HeatingThermostat, WallMountedThermostat, PushButton        | :white_check_mark: |                    |
 | MORITZ   | ShutterContact                                              | :white_check_mark: | :white_check_mark: |
-| IT       | Intertechno V1 (send)                                       | :white_check_mark: |                    |
+| IT       | Intertechno V1 + V3, EV1527 (send V1, receive both)         | :white_check_mark: |                    |
 | Somfy    | RTS shutters (send + receive)                               | :white_check_mark: |                    |
 | Hoermann | garage doors (send + receive)                               | :white_check_mark: |                    |
 | UNIRoll  | all devices (send)                                          | :white_check_mark: |                    |
+| TCM97001 | Mebus, GT_WT_02, Type1, KW9010, KW9015                      | :white_check_mark: |                    |
+| TCM97001 | Prologue, NC_WS, Eurochron, Rubicson, AURIOL, ABS700        | :white_check_mark: |                    |
+| Revolt   | NC-5462 power meter                                         | :white_check_mark: |                    |
 
-Everything not in this list - Revolt, Kopp FC, the cheap 433 MHz sensor families, HomeMatic, wM-Bus
-
-- is on the [roadmap](ROADMAP.md). Adding a protocol means adding
-  one file to `lib/`; the FHEM sources at <https://svn.fhem.de/fhem/trunk/fhem/FHEM/> are the
-  reference implementation. Pull requests welcome.
+A message whose prefix culfw uses but for which `cul` has no parser yet comes back as
+`{protocol, unknown: true}`. It carries no `data`, so it is easy to log and easy to ignore.
+Kopp FC, CUL_IR, HomeMatic, wM-Bus and the Ventus wind/rain sensors are on the
+[roadmap](ROADMAP.md). Adding a protocol means adding one file to `lib/`; the FHEM sources at
+<https://svn.fhem.de/fhem/trunk/fhem/FHEM/> are the reference implementation. Pull requests welcome.
 
 ## Further reading
 

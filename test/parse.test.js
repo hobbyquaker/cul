@@ -67,6 +67,40 @@ test('FHT80b', () => {
     assert.equal(message.data.valueRaw, '00');
 });
 
+test('MORITZ (MAX!)', async (t) => {
+    await t.test('wall thermostat control', () => {
+        const message = parseMessage('Z0C000442113AD30C4F0D001CB41D');
+        assert.equal(message.protocol, 'MORITZ');
+        assert.equal(message.address, '113ad3');
+        assert.equal(message.device, 'WallMountedThermostat');
+        assert.equal(message.data.error, undefined);
+        assert.equal(message.data.msgType, 'WallThermostatControl');
+        // the payload must not contain the rssi byte
+        assert.equal(message.data.payload, '1CB4');
+        assert.equal(message.data.desiredTemperature, 14);
+        assert.equal(message.data.measuredTemperature, 18);
+        assert.equal(message.rssi, -59.5);
+    });
+
+    await t.test('shutter contact', () => {
+        const message = parseMessage('Z0B4F06300E3F3C1234560012F7');
+        assert.equal(message.device, 'ShutterContact');
+        assert.equal(message.data.error, undefined);
+        assert.equal(message.data.isopen, 1);
+        assert.equal(message.data.battery, 'ok');
+    });
+
+    await t.test('a truncated message is reported, not decoded', () => {
+        assert.equal(parseMessage('Z0C000442113AD30C4F0D00A5').data.error, 'len mismatch');
+    });
+
+    await t.test('the culfw version response', () => {
+        const message = parseMessage('V 1.66 CSM868');
+        assert.equal(message.data.culfw.version, '1.66');
+        assert.equal(message.data.culfw.hardware, 'CSM868');
+    });
+});
+
 test('FHT80 TF window sensor', async (t) => {
     await t.test('window closed', () => {
         const message = parseMessage('T12345602E5');
